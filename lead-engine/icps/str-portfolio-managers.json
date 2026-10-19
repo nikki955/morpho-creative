@@ -1,0 +1,367 @@
+{
+  "slug": "str-portfolio-managers",
+  "name": "Morpho STR Portfolio Managers",
+  "description": "Independent short-term rental and vacation rental management companies in the US (New England first, then the Southeast) that manage 10 to 75 active STR units, ideally 15 to 50. Third-party managers or owned-and-managed portfolios, full service: guest services, housekeeping coordination, homeowner services. Team of roughly 3 to 20. The buyer is the founder, owner, CEO or managing partner, secondarily the COO or director of operations. Does NOT qualify: individual Airbnb hosts or single-property owners, real estate sales-only brokerages, long-term-only property managers, software vendors, cleaning-only companies, national brands (Vacasa, Evolve, Casago, Vtrips, AvantStay, Sonder), and franchise locations (iTrip, Grand Welcome) unless the local owner clearly runs their own ops. Unit count must be verified from the website, a listing count, or a stated number.",
+  "offer_context": "Morpho sells operational capacity: AI inquiry routing and guest comms, SOPs, automated owner reporting, direct booking infrastructure, so a founder can grow the portfolio without the admin growing at the same rate. Not 'AI' as a product.",
+  "search_terms": [
+    "vacation rental management company",
+    "short term rental management",
+    "Airbnb property management",
+    "vacation rental property manager",
+    "cottage rental management"
+  ],
+  "locations": {
+    "new_england": [
+      "Maine, USA",
+      "New Hampshire, USA",
+      "Vermont, USA",
+      "Massachusetts, USA",
+      "Rhode Island, USA",
+      "Connecticut, USA"
+    ],
+    "southeast": [
+      "North Carolina, USA",
+      "South Carolina, USA",
+      "Georgia, USA",
+      "Florida, USA",
+      "Tennessee, USA",
+      "Alabama, USA",
+      "Virginia, USA"
+    ]
+  },
+  "max_results_per_search": 60,
+  "batch_target": 100,
+  "size": {
+    "metric": "units",
+    "label": "STR units under management",
+    "min": 10,
+    "max": 75,
+    "sweet_min": 15,
+    "sweet_max": 50,
+    "require_verified": true,
+    "patterns": [
+      "(\\d{1,4})\\+?\\s*(?:luxury |premier |beautiful |unique |hand[- ]picked |curated |vacation |short[- ]term |holiday )?(?:rentals?|homes|properties|units|cottages|cabins|condos|listings|doors)\\b",
+      "(?:manage|managing|portfolio of|over|more than)\\s*(\\d{1,4})\\+?\\s*(?:luxury |vacation |short[- ]term )?(?:rentals?|homes|properties|units|cottages|cabins|condos|listings|doors)"
+    ],
+    "listing_url_patterns": [
+      "/property/",
+      "/properties/",
+      "/rental/",
+      "/rentals/",
+      "/vacation-rentals/",
+      "/vacation-rental/",
+      "/listing/",
+      "/listings/",
+      "/homes/",
+      "/home/",
+      "/cottage/",
+      "/cottages/",
+      "/cabin/",
+      "/cabins/",
+      "/condo/",
+      "/condos/",
+      "/unit/",
+      "/units/",
+      "/stay/",
+      "/stays/",
+      "/lodging/"
+    ],
+    "listing_index_paths": [
+      "/rentals",
+      "/vacation-rentals",
+      "/properties",
+      "/our-homes",
+      "/homes",
+      "/listings",
+      "/cottages",
+      "/cabins",
+      "/stays",
+      "/all-rentals",
+      "/search"
+    ]
+  },
+  "segments": [
+    {
+      "key": "overloaded",
+      "label": "Segment A: Overloaded Operator",
+      "min": 10,
+      "max": 25,
+      "target_share": 0.6
+    },
+    {
+      "key": "scaling",
+      "label": "Segment B: Scaling Portfolio",
+      "min": 26,
+      "max": 75,
+      "target_share": 0.3
+    },
+    {
+      "key": "ota_dependent",
+      "label": "Segment C: OTA-Dependent Operator",
+      "rule": "no_direct_booking",
+      "target_share": 0.1
+    }
+  ],
+  "business_types": {
+    "accept": [
+      "str_property_manager",
+      "owner_operated_portfolio"
+    ],
+    "options": {
+      "str_property_manager": "manages vacation or short-term rentals for homeowners as a service (full service: guest comms, cleaning coordination, owner statements)",
+      "owner_operated_portfolio": "owns and operates its own portfolio of multiple short-term rentals under one brand",
+      "real_estate_sales": "real estate brokerage or agent whose main business is buying and selling",
+      "long_term_rental_manager": "manages annual or long-term residential leases only",
+      "cleaning_company": "cleaning, turnover or housekeeping service only",
+      "software_vendor": "sells software, a PMS, a channel manager or tools to rental managers",
+      "hotel_or_inn": "hotel, motel, inn, B&B or resort operating rooms rather than homes",
+      "individual_host": "a single owner listing one or two homes",
+      "franchise_location": "a local branch of a national franchise (iTrip, Grand Welcome)",
+      "other": "none of the above"
+    }
+  },
+  "decision_makers": {
+    "primary": [
+      "founder",
+      "co-founder",
+      "owner",
+      "co-owner",
+      "ceo",
+      "president",
+      "managing partner",
+      "principal",
+      "proprietor"
+    ],
+    "secondary": [
+      "coo",
+      "chief operating officer",
+      "director of operations",
+      "operations director",
+      "general manager",
+      "portfolio manager",
+      "vp of operations",
+      "operations manager"
+    ]
+  },
+  "exclude": {
+    "domains": [
+      "vacasa.com",
+      "evolve.com",
+      "casago.com",
+      "vtrips.com",
+      "avantstay.com",
+      "sonder.com",
+      "redawning.com",
+      "awaze.com",
+      "turnkeyvr.com",
+      "itrip.net",
+      "grandwelcome.com",
+      "marriott.com",
+      "hilton.com"
+    ],
+    "category_keywords": [
+      "cleaning",
+      "janitorial",
+      "maid",
+      "real estate agent",
+      "real estate agency",
+      "apartment complex",
+      "apartment building",
+      "storage",
+      "hotel",
+      "motel",
+      "campground",
+      "software",
+      "mortgage",
+      "home builder",
+      "general contractor"
+    ],
+    "text_signals": [
+      "long-term rentals only",
+      "we do not manage short-term",
+      "annual leases only",
+      "property management software",
+      "free trial",
+      "request a demo",
+      "book a demo"
+    ]
+  },
+  "signals": {
+    "tech": {
+      "Guesty": [
+        "guesty",
+        "guestybookings"
+      ],
+      "Hostaway": [
+        "hostaway"
+      ],
+      "OwnerRez": [
+        "ownerrez",
+        "ownerreservations"
+      ],
+      "Hospitable": [
+        "hospitable.com",
+        "hospitable-"
+      ],
+      "Lodgify": [
+        "lodgify"
+      ],
+      "Streamline": [
+        "streamlinevrs",
+        "streamline.com/"
+      ],
+      "Track": [
+        "trackhs",
+        "track-hs"
+      ],
+      "Escapia": [
+        "escapia"
+      ],
+      "LiveRez": [
+        "liverez"
+      ],
+      "Barefoot": [
+        "barefoot.com",
+        "barefootrental"
+      ],
+      "Rezfusion": [
+        "rezfusion"
+      ],
+      "Uplisting": [
+        "uplisting"
+      ],
+      "Hostfully": [
+        "hostfully"
+      ],
+      "Boostly": [
+        "boostly"
+      ],
+      "Smoobu": [
+        "smoobu"
+      ],
+      "Beds24": [
+        "beds24"
+      ],
+      "iGMS": [
+        "igms.com"
+      ],
+      "Breezeway": [
+        "breezeway"
+      ],
+      "Bluetent": [
+        "bluetent"
+      ]
+    },
+    "direct_booking": [
+      "book now",
+      "book direct",
+      "check availability",
+      "search availability",
+      "instant book",
+      "reserve now",
+      "check-in",
+      "check in date",
+      "arrival date"
+    ],
+    "ota_links": [
+      "airbnb.com/rooms",
+      "airbnb.com/h/",
+      "airbnb.com/users",
+      "vrbo.com/",
+      "booking.com/hotel"
+    ],
+    "hiring": [
+      "we're hiring",
+      "we are hiring",
+      "join our team",
+      "now hiring",
+      "job opening",
+      "open positions"
+    ],
+    "growth": [
+      "now accepting new",
+      "accepting new homes",
+      "accepting new properties",
+      "new market",
+      "expanding to",
+      "we've expanded",
+      "acquired",
+      "acquisition",
+      "recently added",
+      "just added",
+      "newest additions"
+    ]
+  },
+  "email": {
+    "role_prefixes": [
+      "info",
+      "hello",
+      "contact",
+      "reservations",
+      "reservation",
+      "book",
+      "booking",
+      "bookings",
+      "stay",
+      "stays",
+      "rentals",
+      "rental",
+      "guest",
+      "guests",
+      "office",
+      "support",
+      "admin",
+      "team",
+      "sales",
+      "inquiries",
+      "inquiry",
+      "frontdesk",
+      "help",
+      "mail",
+      "vacations",
+      "welcome",
+      "concierge"
+    ],
+    "owner_prefixes": [
+      "owner",
+      "owners",
+      "homeowner",
+      "homeowners",
+      "ownerservices",
+      "management",
+      "manager",
+      "partners"
+    ]
+  },
+  "pages": {
+    "people_keywords": [
+      "about",
+      "team",
+      "our-team",
+      "meet",
+      "staff",
+      "who-we-are",
+      "our-story",
+      "leadership",
+      "people",
+      "founder"
+    ],
+    "contact_keywords": [
+      "contact",
+      "get-in-touch",
+      "reach-us",
+      "owners",
+      "homeowners",
+      "property-owners",
+      "list-your-home",
+      "management-services",
+      "property-management",
+      "owner-services"
+    ]
+  },
+  "crm": {
+    "icp_tag": "morpho-str-icp",
+    "source": "Morpho lead engine",
+    "note_header": "STR ICP lead"
+  }
+}

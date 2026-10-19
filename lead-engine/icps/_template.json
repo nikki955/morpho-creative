@@ -1,0 +1,179 @@
+{
+  "slug": "my-icp-slug",
+  "name": "Human readable ICP name",
+  "description": "One paragraph the qualifier reads. Who qualifies (business model, size, geography, who the buyer is), and who does not. Be concrete. This is the equivalent of Instantly's AI Search prompt.",
+  "offer_context": "One or two sentences on what Morpho sells this ICP, so buying signals can be judged.",
+  "search_terms": [
+    "the phrases a local business in this ICP would be listed under on Google Maps",
+    "two to six of them"
+  ],
+  "locations": {
+    "region_key": [
+      "Maine, USA",
+      "New Hampshire, USA"
+    ]
+  },
+  "max_results_per_search": 60,
+  "batch_target": 100,
+  "size": {
+    "metric": "units",
+    "label": "what the number counts (units, rooms, sites, employees, locations)",
+    "min": 10,
+    "max": 75,
+    "sweet_min": 15,
+    "sweet_max": 50,
+    "require_verified": true,
+    "patterns": [
+      "(\\d{1,4})\\+?\\s*(?:vacation |short[- ]term )?(?:rentals?|homes|properties|units)"
+    ],
+    "listing_url_patterns": [
+      "/property/",
+      "/properties/",
+      "/rentals/"
+    ],
+    "listing_index_paths": [
+      "/rentals",
+      "/properties"
+    ]
+  },
+  "segments": [
+    {
+      "key": "small",
+      "label": "Segment A",
+      "min": 10,
+      "max": 25,
+      "target_share": 0.6
+    },
+    {
+      "key": "mid",
+      "label": "Segment B",
+      "min": 26,
+      "max": 75,
+      "target_share": 0.3
+    },
+    {
+      "key": "no_direct_booking",
+      "label": "Segment C",
+      "rule": "no_direct_booking",
+      "target_share": 0.1
+    }
+  ],
+  "business_types": {
+    "accept": [
+      "target_business"
+    ],
+    "options": {
+      "target_business": "describe the business that qualifies",
+      "adjacent_but_wrong": "describe the look-alike that does not qualify",
+      "vendor": "sells software or services to the target instead of being the target",
+      "other": "anything else"
+    }
+  },
+  "decision_makers": {
+    "primary": [
+      "founder",
+      "co-founder",
+      "owner",
+      "co-owner",
+      "ceo",
+      "president",
+      "managing partner",
+      "principal"
+    ],
+    "secondary": [
+      "coo",
+      "director of operations",
+      "operations director",
+      "general manager",
+      "vp of operations"
+    ]
+  },
+  "exclude": {
+    "domains": [
+      "nationalbrand.com"
+    ],
+    "category_keywords": [
+      "cleaning",
+      "software"
+    ],
+    "text_signals": [
+      "request a demo",
+      "free trial"
+    ]
+  },
+  "signals": {
+    "tech": {
+      "ExamplePMS": [
+        "examplepms",
+        "example-pms"
+      ]
+    },
+    "direct_booking": [
+      "book now",
+      "check availability",
+      "reserve"
+    ],
+    "ota_links": [
+      "airbnb.com/rooms",
+      "vrbo.com/"
+    ],
+    "hiring": [
+      "we're hiring",
+      "we are hiring",
+      "join our team",
+      "now hiring"
+    ],
+    "growth": [
+      "now accepting",
+      "new location",
+      "expanding",
+      "acquired",
+      "acquisition",
+      "new market"
+    ]
+  },
+  "email": {
+    "role_prefixes": [
+      "info",
+      "hello",
+      "contact",
+      "office",
+      "support",
+      "admin",
+      "team",
+      "sales",
+      "inquiries",
+      "help",
+      "mail"
+    ],
+    "owner_prefixes": [
+      "owner",
+      "owners",
+      "management",
+      "manager"
+    ]
+  },
+  "pages": {
+    "people_keywords": [
+      "about",
+      "team",
+      "our-team",
+      "meet",
+      "staff",
+      "who-we-are",
+      "our-story",
+      "leadership",
+      "people"
+    ],
+    "contact_keywords": [
+      "contact",
+      "get-in-touch",
+      "reach-us"
+    ]
+  },
+  "crm": {
+    "icp_tag": "morpho-my-icp",
+    "source": "Morpho lead engine",
+    "note_header": "My ICP lead"
+  }
+}

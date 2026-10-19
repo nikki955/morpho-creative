@@ -1,0 +1,4 @@
+.env
+leads/
+__pycache__/
+*.pyc
