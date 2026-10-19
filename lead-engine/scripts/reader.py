@@ -51,6 +51,7 @@ BAD_NAME_WORDS = {"vacation", "rental", "rentals", "property", "properties", "ma
                   "our", "the", "team", "about", "contact", "home", "homes", "llc", "inc", "maine", "beach",
                   "lake", "mountain", "island", "coast", "north", "south", "east", "west", "new", "owner",
                   "privacy", "policy", "terms", "book", "now", "read", "more", "learn", "view", "all"}
+LEAD_IN_WORDS = {"meet", "by", "from", "welcome", "hi", "hello", "introducing", "with", "and", "contact", "call", "email", "ask", "owner", "owners"}
 TOTAL_RE = re.compile(r"(?:showing|displaying)?\s*(?:\d+\s*[-–]\s*\d+\s*of\s*)?(\d{1,4})\s*(?:results|properties|rentals|homes|listings|units|cottages|cabins|condos|sites|rooms)\b", re.I)
 
 
@@ -290,6 +291,9 @@ def find_people(pages, icp):
                 g = m.groups()
                 name, title = (g[0], g[1]) if i != 2 else (g[1], g[0])
                 words = name.split()
+                while words and words[0].lower() in LEAD_IN_WORDS:
+                    words.pop(0)
+                name = " ".join(words)
                 if any(w.lower() in BAD_NAME_WORDS for w in words) or len(words) < 2:
                     continue
                 key = name.lower()
@@ -319,7 +323,7 @@ def find_size_claims(pages, icp):
                 ev = text[max(0, m.start() - 50): m.end() + 50]
                 if re.search(r"\b(19|20)\d{2}\b", m.group(0)):      # years are not counts
                     continue
-                if re.search(r"(sq\.? ?ft|square|bed|bath|guests?|sleeps|acres?|miles?|minutes?|\$|%|reviews?|years?)", ev, re.I):
+                if re.search(r"(sq\.? ?ft|square|bed(?!room)|bath|guests?(?!\s*(?:rooms?|suites?))|sleeps|acres?|miles?|minutes?|\$|%|reviews?|years?)", ev, re.I):
                     continue
                 claims.append({"n": n, "evidence": ev.strip(), "url": pg["url"]})
     # dedupe by number, keep first evidence
@@ -413,6 +417,8 @@ def process(company, icp, out, max_pages, fc_fallback, ledger):
         res["exclude_text_hits"] = [h["phrase"] for h in signal_hits(pgs, icp["exclude"].get("text_signals", []))]
         res["hiring_signals"] = signal_hits(pgs, icp["signals"].get("hiring", []))
         res["growth_signals"] = signal_hits(pgs, icp["signals"].get("growth", []))
+        res["ownership_signals"] = signal_hits(pgs, icp["signals"].get("ownership_change", []))
+        res["portfolio_signals"] = signal_hits(pgs, icp["signals"].get("portfolio", []))
         res["size_claims"] = find_size_claims(pgs, icp)
         res["people"] = find_people(pgs, icp)
         emails = set()

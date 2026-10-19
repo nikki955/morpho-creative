@@ -28,7 +28,7 @@ from common import default_run_id, http_retry, load_icp, require_env, run_dir, s
 
 BASE = "https://services.leadconnectorhq.com"
 INSTANTLY_COLS = ["email", "first_name", "last_name", "company_name", "website", "phone", "personalization",
-                  "city", "state", "size", "segment", "title", "tech", "buying_signal", "icp", "batch"]
+                  "city", "state", "size", "segment", "buyer_type", "title", "tech", "buying_signal", "icp", "batch"]
 
 
 def e164(phone):
@@ -44,6 +44,8 @@ def tags_for(r, icp, batch_tag):
     t = [icp["crm"]["icp_tag"], batch_tag, f"seg-{r['segment']}" if r["segment"] else "seg-unknown"]
     for fl in filter(None, (r.get("flags") or "").split(";")):
         t.append(f"seg-{fl}")
+    if r.get("buyer_type"):
+        t.append(f"buyer-{slug(r['buyer_type'])}")
     if r["sweet_spot"] == "yes":
         t.append("size-sweet-spot")
     t.append(f"email-{r['email_type'] or 'missing'}" if r["email"] else "email-missing")
@@ -69,6 +71,8 @@ def note_for(r, icp, batch_tag):
         f"Evidence: {r['size_evidence']}" if r["size_evidence"] else "",
         f"Segment: {r['segment'] or 'unknown'} | Flags: {r['flags'] or 'none'} | Sweet spot: {r['sweet_spot']}",
         f"Business type: {r['business_type']} | Fit score: {r['fit_score']}" if r.get("business_type") else "",
+        f"Buyer type: {r['buyer_type']} ({r.get('buyer_type_evidence', '')})" if r.get("buyer_type") else "",
+        f"Ownership change: {r['ownership_signals']}" if r.get("ownership_signals") else "",
         (f"Decision maker: {r['first_name']} {r['last_name']} ({r['title'] or 'title unknown'})" if r["first_name"] else "Decision maker: not found yet"),
         f"Email type: {r['email_type']} | Status: {r['email_status'] or 'unchecked'} | Source: {r['email_source']}",
         f"LinkedIn: {r['linkedin_url']}" if r["linkedin_url"] else "",
@@ -142,7 +146,7 @@ def cmd_export(args, icp, out, batch_tag):
             w.writerow({"email": r["email"], "first_name": r["first_name"], "last_name": r["last_name"],
                         "company_name": r["company"], "website": r["website"], "phone": e164(r["phone"]) or "",
                         "personalization": r.get("summary", "")[:200], "city": r["city"], "state": r["state"],
-                        "size": r["size"], "segment": r["segment"], "title": r["title"], "tech": r["tech"],
+                        "size": r["size"], "segment": r["segment"], "buyer_type": r.get("buyer_type", ""), "title": r["title"], "tech": r["tech"],
                         "buying_signal": signal, "icp": icp["slug"], "batch": batch_tag})
     with open(out / "export_leads.csv", "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=list(rows[0].keys()) if rows else ["email"])

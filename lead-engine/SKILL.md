@@ -17,7 +17,7 @@ Read `references/icp-guide.md` before writing or editing an ICP. Read `reference
 
 1. `python3 <skill>/scripts/lead_engine.py doctor`. It lists which keys are set and which discovery source will be used. Minimum to run anything: `GOOGLE_PLACES_API_KEY` or `FIRECRAWL_API_KEY` (or a CSV of companies). `ANTHROPIC_API_KEY` turns on the Claude qualification pass. CRM push needs `GHL_API_KEY` and `GHL_LOCATION_ID`. Setup for each is in `references/setup.md`. If a key is missing, say which one and what it unlocks, then continue with what is available rather than stopping.
 2. `pip install requests beautifulsoup4 dnspython anthropic` if the doctor reports missing modules.
-3. Pick the ICP: `lead_engine.py list-icps`. If the profile Nikki wants does not exist yet, go to section 7 first.
+3. Pick the ICP: `lead_engine.py list-icps`. Shipped: `str-portfolio-managers`, `rv-parks-campgrounds`, `boutique-hotels`, `glamping`, `inns`, `bed-and-breakfasts`. The five lodging ICPs come from the "Morpho ICPs: Independent Lodging Owners" doc and run nationally except Maine. If the profile Nikki wants does not exist yet, go to section 7 first.
 4. Ask only what you cannot default: regions for this batch (default: the first region key in the ICP), batch size (default `batch_target` in the ICP, usually 100), run id (default `<icp-slug>-YYYY-MM-DD`). If she is not around, use the defaults and say so at the top of the report.
 
 ## 1. Discover
@@ -48,6 +48,8 @@ python3 <skill>/scripts/lead_engine.py qualify --icp <slug> --run-id <id> --llm 
 ```
 
 Use `--llm` whenever `ANTHROPIC_API_KEY` exists. It costs about 6 cents per 100 companies and sharply improves business-type calls, decision-maker picks, and size evidence. Results cache in `llm.json`, so reruns are free. `LEAD_ENGINE_MODEL` overrides the model (default `claude-haiku-5-5`; `claude-sonnet-5-5` if a profile proves hard to classify).
+
+Every lead also gets a `buyer_type` (owner_operator, portfolio_owner_manager, recent_acquirer) from the LLM pass, or from ownership-change and multi-property phrases on the site when the LLM is off. It drives the `buyer-<type>` CRM tag and the messaging angle; `recent_acquirer` is the fastest closer per the ICP doc and sorts higher.
 
 Report `summary.json` in two lines. Statuses:
 1. `ready`: in range, named decision maker, personal email. Goes to CRM.
@@ -94,7 +96,7 @@ Show her the dry-run counts and two sample payloads, get an explicit yes, test w
 
 Smartlist: the HighLevel API cannot create one, so in FG Funnels: Contacts > Smart Lists > More Filters > Tags is `<run-id>` > Save as `"<ICP name> | <run-id>"`. If Claude in Chrome is available and she says yes, do it for her and stop at any login screen.
 
-## 7. Building a new ICP (the other 7 profiles)
+## 7. Building a new ICP
 
 ```
 python3 <skill>/scripts/lead_engine.py new-icp --slug rv-park-owners --locations-from str-portfolio-managers \
@@ -103,7 +105,7 @@ python3 <skill>/scripts/lead_engine.py new-icp --slug rv-park-owners --locations
 
 With an Anthropic key, Claude drafts the whole file from the prompt (this is the Instantly "AI Search" step). Without one, the template is copied for you to fill in. Either way, open the file and check: search terms (what the business is listed as on Google Maps), the size metric and its regexes, segments, accepted business types and the look-alikes to reject, exclusion list, tech fingerprints, CRM tag. Validate with `list-icps`. Run a 1-state pilot (`--states "Maine, USA"`) before a full batch and read `excluded.csv` to tune.
 
-To draft all 8 quickly: interview Nikki for each profile in one pass (who, where, what size, who the buyer is, who to reject, what she sells them), then run `new-icp` eight times and review each file with her.
+For a profile that is not shipped yet: interview Nikki (who, where, what size, who the buyer is, who to reject, what she sells them), run `new-icp`, and review the file with her. `references/icp-guide.md` has the field-by-field guide and the table of shipped lodging ICPs.
 
 ## 8. One-shot
 

@@ -1,0 +1,12 @@
+{
+  "_comment": "Shared US location sets for the lodging ICPs. National, Maine deliberately left out (R3B1 study runs there). Google caps a text search at 60 results, so for dense categories in big states use the metro lists or pass --states with cities.",
+  "northeast": ["New Hampshire, USA", "Vermont, USA", "Massachusetts, USA", "Rhode Island, USA", "Connecticut, USA", "New York, USA", "New Jersey, USA", "Pennsylvania, USA"],
+  "mid_atlantic": ["Delaware, USA", "Maryland, USA", "Virginia, USA", "West Virginia, USA"],
+  "southeast": ["North Carolina, USA", "South Carolina, USA", "Georgia, USA", "Florida, USA", "Tennessee, USA", "Alabama, USA", "Kentucky, USA", "Mississippi, USA"],
+  "midwest": ["Ohio, USA", "Michigan, USA", "Indiana, USA", "Illinois, USA", "Wisconsin, USA", "Minnesota, USA", "Iowa, USA", "Missouri, USA"],
+  "plains": ["North Dakota, USA", "South Dakota, USA", "Nebraska, USA", "Kansas, USA", "Oklahoma, USA"],
+  "south_central": ["Texas, USA", "Arkansas, USA", "Louisiana, USA"],
+  "mountain_west": ["Colorado, USA", "Utah, USA", "Montana, USA", "Wyoming, USA", "Idaho, USA", "Nevada, USA", "Arizona, USA", "New Mexico, USA"],
+  "pacific": ["California, USA", "Oregon, USA", "Washington, USA", "Alaska, USA", "Hawaii, USA"],
+  "drive_to_metros": ["Asheville, NC", "Blue Ridge, GA", "Gatlinburg, TN", "Hilton Head, SC", "Outer Banks, NC", "Lake George, NY", "Hudson Valley, NY", "Poconos, PA", "Cape Cod, MA", "White Mountains, NH", "Stowe, VT", "Door County, WI", "Traverse City, MI", "Hill Country, TX", "Fredericksburg, TX", "Sedona, AZ", "Moab, UT", "Estes Park, CO", "Big Sur, CA", "Sonoma County, CA", "Hood River, OR", "Leavenworth, WA", "Florida Keys, FL", "St. Augustine, FL"]
+}

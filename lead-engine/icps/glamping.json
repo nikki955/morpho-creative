@@ -1,0 +1,110 @@
+{
+  "slug": "glamping",
+  "name": "Morpho Lodging: Glamping Operators",
+  "description": "Independent glamping operators in the US (not Maine) with roughly 8 to 50 units (safari tents, domes, yurts, treehouses, airstreams, tiny cabins, covered wagons), or a portfolio of smaller sites. Often a newer entrant: an investor who bought land, a farm or ranch that added units, or an entrepreneur who started with a few tents and scaled. The owner makes the decisions and is reachable. Operating, or opening within six months with funding. Does NOT qualify: branded glamping chains (Under Canvas, AutoCamp, Postcard Cabins / Getaway, Collective Retreats, Huttopia, Firelight, Terramor), single-unit hosts with one or two listings, booking platforms and directories (Hipcamp, Glamping Hub, Airbnb), gear and tent manufacturers, event-only or festival glamping rental companies, RV parks that only mention glamping in passing (those belong to the RV park ICP), and concept-stage or unfunded developments. Unit count must be verified from the website (a stated number or a list of units).",
+  "offer_context": "Morpho sells a fractional operations retainer and the AI visibility QuickScan: a direct booking channel and repeat-guest program instead of renting the customer from Hipcamp and Airbnb, turnover and housekeeping logistics across spread-out units, guest experience that holds at 20 units, seasonal staffing and cash flow, SOPs. Buying signals: strong Hipcamp or Airbnb presence with no direct booking site, recent unit expansion, housekeeping job posts, reviews about cleanliness or check-in, new listings in the last 12 to 24 months, adding a second site, building a direct booking website.",
+  "search_terms": ["glamping", "glamping resort", "luxury camping", "yurt rental", "treehouse rental", "dome rental"],
+  "locations": {
+    "northeast": ["New Hampshire, USA", "Vermont, USA", "Massachusetts, USA", "Rhode Island, USA", "Connecticut, USA", "New York, USA", "New Jersey, USA", "Pennsylvania, USA"],
+    "mid_atlantic": ["Delaware, USA", "Maryland, USA", "Virginia, USA", "West Virginia, USA"],
+    "southeast": ["North Carolina, USA", "South Carolina, USA", "Georgia, USA", "Florida, USA", "Tennessee, USA", "Alabama, USA", "Kentucky, USA", "Mississippi, USA"],
+    "midwest": ["Ohio, USA", "Michigan, USA", "Indiana, USA", "Illinois, USA", "Wisconsin, USA", "Minnesota, USA", "Iowa, USA", "Missouri, USA"],
+    "plains": ["North Dakota, USA", "South Dakota, USA", "Nebraska, USA", "Kansas, USA", "Oklahoma, USA"],
+    "south_central": ["Texas, USA", "Arkansas, USA", "Louisiana, USA"],
+    "mountain_west": ["Colorado, USA", "Utah, USA", "Montana, USA", "Wyoming, USA", "Idaho, USA", "Nevada, USA", "Arizona, USA", "New Mexico, USA"],
+    "pacific": ["California, USA", "Oregon, USA", "Washington, USA"],
+    "drive_to_metros": ["Asheville, NC", "Blue Ridge, GA", "Gatlinburg, TN", "Hudson Valley, NY", "Catskills, NY", "Poconos, PA", "Hill Country, TX", "Fredericksburg, TX", "Sedona, AZ", "Moab, UT", "Big Sur, CA", "Joshua Tree, CA", "Hood River, OR", "Leavenworth, WA", "Zion, UT", "Smoky Mountains, TN", "Shenandoah, VA", "Door County, WI"]
+  },
+  "max_results_per_search": 60,
+  "batch_target": 80,
+  "size": {
+    "metric": "units",
+    "label": "glamping units (tents, domes, yurts, cabins, treehouses)",
+    "min": 8,
+    "max": 50,
+    "sweet_min": 10,
+    "sweet_max": 35,
+    "require_verified": true,
+    "patterns": [
+      "(\\d{1,2})\\+?\\s*(?:luxury |safari |canvas |bell |geodesic |geo |glamping |unique |private |furnished |heated |vintage |renovated )*(?:tents|domes|yurts|treehouses|tree houses|airstreams|cabins|tiny (?:homes|houses|cabins)|wagons|tipis|teepees|a-frames|pods|huts|units|glamping (?:units|sites|accommodations)|accommodations|sites)\\b",
+      "(?:offers?|features?|with|has|home to|choose from|only)\\s*(\\d{1,2})\\+?\\s*(?:unique |luxury |glamping )?(?:tents|domes|yurts|cabins|units|accommodations|sites)\\b"
+    ],
+    "listing_url_patterns": ["/accommodations/", "/accommodation/", "/stay/", "/units/", "/tents/", "/tent/", "/domes/", "/dome/", "/yurts/", "/yurt/", "/cabins/", "/cabin/", "/treehouse/", "/treehouses/", "/rooms/", "/sites/", "/glamping/", "/lodging/"],
+    "listing_index_paths": ["/accommodations", "/accommodation", "/stay", "/units", "/tents", "/domes", "/yurts", "/cabins", "/treehouses", "/glamping", "/lodging", "/our-tents", "/our-sites", "/rates", "/book"]
+  },
+  "segments": [
+    {"key": "early_scale", "label": "8 to 20 units", "min": 8, "max": 20, "target_share": 0.6},
+    {"key": "scaled", "label": "21 to 50 units", "min": 21, "max": 50, "target_share": 0.4},
+    {"key": "platform_dependent", "label": "No direct booking engine detected", "rule": "no_direct_booking", "target_share": 0.4}
+  ],
+  "buyer_types": {
+    "options": {
+      "owner_operator": "one site, owner hands-on, often a farm, ranch or couple that built the units themselves",
+      "portfolio_owner_manager": "two or more glamping sites, or glamping plus other lodging, with managers on site; growing fast",
+      "recent_acquirer": "bought land or an existing property in the last 24 months and is converting or has just converted it to glamping; first full season under new ownership"
+    },
+    "on_ownership_change": "recent_acquirer",
+    "on_portfolio_signal": "portfolio_owner_manager",
+    "priority_bonus": {"recent_acquirer": 2, "portfolio_owner_manager": 1}
+  },
+  "business_types": {
+    "accept": ["independent_glamping_operator", "farm_or_ranch_with_glamping"],
+    "options": {
+      "independent_glamping_operator": "independently owned glamping site renting multiple tents, domes, yurts, cabins or treehouses nightly",
+      "farm_or_ranch_with_glamping": "working farm, ranch, vineyard or retreat property that runs a multi-unit glamping operation",
+      "branded_glamping_chain": "Under Canvas, AutoCamp, Postcard Cabins, Getaway, Collective Retreats, Huttopia, Firelight, Terramor or similar multi-state brand",
+      "single_unit_host": "one or two units, typically an Airbnb or Hipcamp host without a business operation",
+      "rv_park_or_campground": "primarily an RV park or campground that happens to offer a few glamping units (belongs to the RV park ICP)",
+      "booking_platform_or_directory": "a site that lists many glamping properties (Hipcamp, Glamping Hub, Airbnb, directories, blogs)",
+      "manufacturer_or_rental_gear": "sells or rents tents, domes or glamping structures, or supplies event glamping",
+      "event_or_festival_glamping": "temporary glamping rentals for weddings, festivals or events, no fixed site",
+      "pre_opening_or_concept": "announced, crowdfunding or under construction with no operating units yet",
+      "other": "none of the above"
+    }
+  },
+  "decision_makers": {
+    "primary": ["owner", "co-owner", "owners", "founder", "co-founder", "proprietor", "managing partner", "principal", "president", "ceo", "creator"],
+    "secondary": ["general manager", "site manager", "operations manager", "director of operations", "coo", "property manager", "hospitality manager"]
+  },
+  "exclude": {
+    "domains": [
+      "undercanvas.com", "autocamp.com", "postcardcabins.com", "getaway.house", "collectiveretreats.com", "huttopia.com", "firelightcamps.com",
+      "terramoroutdoorresort.com", "hipcamp.com", "glampinghub.com", "glamping.com", "tentrr.com", "airbnb.com", "vrbo.com", "koa.com",
+      "sunoutdoors.com", "campspot.com", "lodgify.com", "canvascamp.com", "pacificdomes.com", "ekodome.com"
+    ],
+    "category_keywords": [
+      "tent rental service", "party rental", "event rental", "manufacturer", "rv dealer", "real estate agency", "travel agency",
+      "campground chain", "software", "wedding venue only"
+    ],
+    "text_signals": [
+      "book on hipcamp only", "franchise", "wholesale pricing", "buy a dome", "shop tents", "request a demo", "event rental packages", "festival glamping packages", "coming 2028"
+    ]
+  },
+  "signals": {
+    "tech": {
+      "Campspot": ["campspot"], "Lodgify": ["lodgify"], "Checkfront": ["checkfront"], "Cloudbeds": ["cloudbeds"], "ResNexus": ["resnexus"],
+      "Newbook": ["newbook"], "Firefly": ["fireflyreservations"], "Little Hotelier": ["littlehotelier"], "ThinkReservations": ["thinkreservations"],
+      "OwnerRez": ["ownerrez"], "Hostaway": ["hostaway"], "Guesty": ["guesty"], "Hospitable": ["hospitable.com"], "Uplisting": ["uplisting"],
+      "Smoobu": ["smoobu"], "Beds24": ["beds24"], "Bookeo": ["bookeo"], "Peek": ["peek.com", "peekpro"], "FareHarbor": ["fareharbor"], "Mews": ["mews.com"]
+    },
+    "direct_booking": ["book now", "book direct", "check availability", "reserve now", "book your stay", "arrival date", "check-in date", "book online", "availability calendar"],
+    "ota_links": ["hipcamp.com/", "glampinghub.com/", "airbnb.com/rooms", "airbnb.com/h/", "vrbo.com/", "booking.com/hotel", "tentrr.com", "campspot.com/park"],
+    "hiring": ["we're hiring", "we are hiring", "now hiring", "join our team", "housekeeping position", "seasonal positions", "camp host", "open positions", "work with us"],
+    "growth": ["new domes", "new tents", "new units", "new cabins", "coming soon", "expansion", "expanding", "second location", "new location", "now open", "just added", "newest addition", "phase two", "phase 2", "opened in 2025", "opened in 2026", "now booking"],
+    "ownership_change": ["under new ownership", "new ownership", "new owners", "we purchased", "we bought the land", "bought the property", "took over", "since 2025", "since 2026", "our first season"],
+    "portfolio": ["our other locations", "our locations", "our properties", "sister property", "our sites", "also visit", "our second location", "our family of", "across our"]
+  },
+  "email": {
+    "role_prefixes": ["info", "hello", "contact", "reservations", "reservation", "book", "booking", "bookings", "stay", "office", "support", "team", "welcome", "inquiries", "howdy", "hi", "camp", "guest", "guests"],
+    "owner_prefixes": ["owner", "owners", "management", "manager", "founders"]
+  },
+  "pages": {
+    "people_keywords": ["about", "our-story", "story", "team", "our-team", "meet", "who-we-are", "founders", "owners", "the-land", "history"],
+    "contact_keywords": ["contact", "get-in-touch", "reach-us", "directions", "location", "faq", "policies", "press"]
+  },
+  "crm": {
+    "icp_tag": "morpho-lodging-glamping",
+    "source": "Morpho lead engine",
+    "note_header": "Lodging ICP: glamping"
+  }
+}

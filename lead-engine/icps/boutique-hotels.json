@@ -1,0 +1,115 @@
+{
+  "slug": "boutique-hotels",
+  "name": "Morpho Lodging: Boutique Hotels",
+  "description": "Independent, design-led boutique hotels in the US (not Maine) with roughly 15 to 150 keys. Owned by an investor, developer or hospitality entrepreneur who makes the decisions, usually with a GM in place. Portfolio owners often hold two or three in related markets; recent acquirers frequently bought an older motor lodge or historic building and repositioned it. Operating, or opening within six months with funding. Does NOT qualify: branded or flagged hotels (Marriott, Hilton, Hyatt, IHG, Choice, Wyndham, Best Western and their soft brands such as Autograph, Curio, Tribute, Tapestry, JdV, Ascend), properties run by a third-party hotel management company that the owner cannot hire around, hotels over 150 keys, chain motels, hostels, extended-stay and apartment-hotels, hotel brokers, and concept-stage developments. Key count must be verified from the website (a stated number or a rooms listing).",
+  "offer_context": "Morpho sells owner-side operations leadership on a fractional COO retainer ($1,500+ a month, higher for this avatar): system cleanup after opening, standards and SOPs, GM and front-desk accountability, reporting on channel mix, labor and guest satisfaction, direct booking share, plus an AI visibility QuickScan (are they recommended for 'best boutique hotel in <city>'). Buying signals: GM departure or GM job posting, post-renovation reopening, rebrand, heavy OTA presence with a weak direct path, reviews about inconsistent service, recent sale, new competitor nearby.",
+  "search_terms": ["boutique hotel", "independent hotel", "historic hotel", "motor lodge", "design hotel"],
+  "locations": {
+    "northeast": ["New Hampshire, USA", "Vermont, USA", "Massachusetts, USA", "Rhode Island, USA", "Connecticut, USA", "New York, USA", "New Jersey, USA", "Pennsylvania, USA"],
+    "mid_atlantic": ["Delaware, USA", "Maryland, USA", "Virginia, USA", "West Virginia, USA"],
+    "southeast": ["North Carolina, USA", "South Carolina, USA", "Georgia, USA", "Florida, USA", "Tennessee, USA", "Alabama, USA", "Kentucky, USA", "Mississippi, USA"],
+    "midwest": ["Ohio, USA", "Michigan, USA", "Indiana, USA", "Illinois, USA", "Wisconsin, USA", "Minnesota, USA", "Iowa, USA", "Missouri, USA"],
+    "plains": ["North Dakota, USA", "South Dakota, USA", "Nebraska, USA", "Kansas, USA", "Oklahoma, USA"],
+    "south_central": ["Texas, USA", "Arkansas, USA", "Louisiana, USA"],
+    "mountain_west": ["Colorado, USA", "Utah, USA", "Montana, USA", "Wyoming, USA", "Idaho, USA", "Nevada, USA", "Arizona, USA", "New Mexico, USA"],
+    "pacific": ["California, USA", "Oregon, USA", "Washington, USA"],
+    "metros": ["Asheville, NC", "Charleston, SC", "Savannah, GA", "Nashville, TN", "Austin, TX", "San Antonio, TX", "New Orleans, LA", "Santa Fe, NM", "Palm Springs, CA", "Sonoma County, CA", "Portland, OR", "Hudson Valley, NY", "Catskills, NY", "Cape Cod, MA", "Newport, RI", "Burlington, VT", "Portsmouth, NH", "Louisville, KY", "St. Augustine, FL", "Key West, FL", "Marfa, TX", "Bozeman, MT", "Sedona, AZ", "Boise, ID"]
+  },
+  "max_results_per_search": 60,
+  "batch_target": 100,
+  "size": {
+    "metric": "keys",
+    "label": "guest rooms (keys)",
+    "min": 15,
+    "max": 150,
+    "sweet_min": 20,
+    "sweet_max": 90,
+    "require_verified": true,
+    "patterns": [
+      "(\\d{1,3})\\+?\\s*(?:beautifully |thoughtfully |uniquely |individually |luxuriously |elegantly |newly )?(?:appointed |designed |decorated |renovated |restored )?(?:guest ?rooms|rooms and suites|rooms & suites|keys|suites|accommodations|bedrooms|guestrooms)\\b",
+      "(?:boasts?|features?|offers?|with|has|comprises?|home to|only)\\s*(\\d{1,3})\\+?\\s*(?:guest ?rooms|rooms|keys|suites)\\b",
+      "(\\d{1,3})-(?:room|key|suite)\\b"
+    ],
+    "listing_url_patterns": ["/room/", "/rooms/", "/suite/", "/suites/", "/accommodations/", "/accommodation/", "/stay/", "/guest-rooms/", "/rooms-suites/"],
+    "listing_index_paths": ["/rooms", "/rooms-suites", "/rooms-and-suites", "/accommodations", "/accommodation", "/stay", "/guest-rooms", "/suites", "/the-rooms", "/sleep"]
+  },
+  "segments": [
+    {"key": "small_boutique", "label": "15 to 50 keys", "min": 15, "max": 50, "target_share": 0.55},
+    {"key": "mid_boutique", "label": "51 to 150 keys", "min": 51, "max": 150, "target_share": 0.45},
+    {"key": "weak_direct_booking", "label": "No booking engine detected on site", "rule": "no_direct_booking", "target_share": 0.15}
+  ],
+  "buyer_types": {
+    "options": {
+      "owner_operator": "owner is on property and runs it day to day, sometimes with a small team; one hotel",
+      "portfolio_owner_manager": "owns or manages two to roughly ten independent hotels, usually a GM at each; an investor or operator who grew one into several",
+      "recent_acquirer": "bought or repositioned the hotel in the last 24 months (renovated motor lodge, restored historic building, 'newly reopened', 'under new ownership')"
+    },
+    "on_ownership_change": "recent_acquirer",
+    "on_portfolio_signal": "portfolio_owner_manager",
+    "priority_bonus": {"recent_acquirer": 2, "portfolio_owner_manager": 1}
+  },
+  "business_types": {
+    "accept": ["independent_boutique_hotel", "independent_small_hotel_or_lodge"],
+    "options": {
+      "independent_boutique_hotel": "independently owned, design-led or historic hotel with its own brand, 15 to 150 rooms",
+      "independent_small_hotel_or_lodge": "independent hotel, motor lodge or lodge that is not especially design-led but is owner-controlled and in range",
+      "branded_or_flagged": "carries a major brand or soft brand (Marriott, Hilton, Hyatt, IHG, Choice, Wyndham, Best Western, Autograph, Curio, Tribute, Tapestry, Ascend, JdV, Unbound)",
+      "third_party_managed": "operated by a hotel management company (the site names a management company or 'managed by')",
+      "large_hotel_or_resort": "over 150 rooms, convention hotel, casino or large resort",
+      "chain_motel_or_extended_stay": "economy chain motel, extended-stay, apartment-hotel or aparthotel",
+      "inn_or_bnb": "inn or bed and breakfast under 15 rooms (belongs to another ICP)",
+      "hostel_or_vacation_rental": "hostel, vacation rental company or single rental home",
+      "hotel_management_or_broker": "hotel management company, hotel broker, hotel developer or consultant selling to hotels",
+      "pre_opening_or_concept": "announced or under construction with no operating rooms yet",
+      "other": "none of the above"
+    }
+  },
+  "decision_makers": {
+    "primary": ["owner", "co-owner", "proprietor", "founder", "co-founder", "managing partner", "principal", "president", "ceo", "asset manager", "managing director", "developer"],
+    "secondary": ["general manager", "hotel manager", "director of operations", "operations manager", "coo", "vp of operations", "managing member"]
+  },
+  "exclude": {
+    "domains": [
+      "marriott.com", "hilton.com", "hyatt.com", "ihg.com", "choicehotels.com", "wyndhamhotels.com", "bestwestern.com", "accor.com",
+      "sonesta.com", "radissonhotels.com", "omnihotels.com", "kimptonhotels.com", "lifehouse.com", "graduatehotels.com",
+      "sonder.com", "mintHouse.com", "placemakr.com", "selina.com", "bunkhouse.com", "acehotel.com", "proper.com"
+    ],
+    "category_keywords": [
+      "motel chain", "extended stay", "hostel", "apartment", "casino", "convention center", "resort over", "timeshare",
+      "real estate agency", "hotel supplies", "software", "wedding venue only", "restaurant only"
+    ],
+    "text_signals": [
+      "marriott bonvoy", "hilton honors", "world of hyatt", "ihg one rewards", "choice privileges", "wyndham rewards", "best western rewards",
+      "autograph collection", "curio collection", "tribute portfolio", "tapestry collection", "ascend hotel collection", "jdv by hyatt", "unbound collection",
+      "managed by", "professionally managed by", "a member of preferred hotels", "franchise information", "request a demo"
+    ]
+  },
+  "signals": {
+    "tech": {
+      "Cloudbeds": ["cloudbeds"], "Mews": ["mews.com", "mews-"], "innRoad": ["innroad"], "WebRezPro": ["webrezpro"], "SiteMinder": ["siteminder", "thebookingbutton"],
+      "Little Hotelier": ["littlehotelier"], "ThinkReservations": ["thinkreservations"], "ResNexus": ["resnexus"], "StayNTouch": ["stayntouch"],
+      "Opera / Oracle": ["oracle.com/hospitality", "opera cloud"], "Maestro": ["maestropms"], "SynXis": ["synxis"], "Travelclick": ["travelclick"],
+      "Profitroom": ["profitroom"], "Selfbook": ["selfbook"], "Triptease": ["triptease"], "Revinate": ["revinate"], "Canary": ["canarytechnologies"],
+      "Guestline": ["guestline"], "RoomRaccoon": ["roomraccoon"], "Skytouch": ["skytouch"]
+    },
+    "direct_booking": ["book now", "book direct", "best rate guarantee", "check availability", "check rates", "reserve now", "book your stay", "arrival date", "check-in date", "lowest rate"],
+    "ota_links": ["booking.com/hotel", "expedia.com/", "hotels.com/", "tripadvisor.com/Hotel", "airbnb.com/rooms", "agoda.com"],
+    "hiring": ["we're hiring", "we are hiring", "now hiring", "join our team", "open positions", "general manager position", "careers at", "employment opportunities"],
+    "growth": ["newly renovated", "newly reopened", "grand reopening", "reopening", "renovation", "rebrand", "coming soon", "new rooms", "expansion", "our newest", "now open", "opened in 2025", "opened in 2026"],
+    "ownership_change": ["under new ownership", "new ownership", "new owners", "recently acquired", "acquired the hotel", "purchased the hotel", "we purchased", "took over", "newly reopened under", "reimagined by", "since 2025", "since 2026"],
+    "portfolio": ["our hotels", "our properties", "sister hotel", "sister property", "our other hotels", "our collection", "part of the", "family of hotels", "our locations", "hotel group"]
+  },
+  "email": {
+    "role_prefixes": ["info", "hello", "contact", "reservations", "reservation", "book", "booking", "bookings", "stay", "frontdesk", "front", "office", "support", "team", "sales", "events", "concierge", "welcome", "guestservices", "inquiries", "press", "media"],
+    "owner_prefixes": ["owner", "owners", "gm", "generalmanager", "management", "manager", "partners"]
+  },
+  "pages": {
+    "people_keywords": ["about", "our-story", "story", "history", "team", "our-team", "meet", "who-we-are", "leadership", "owners", "the-hotel"],
+    "contact_keywords": ["contact", "get-in-touch", "reach-us", "location", "directions", "press", "faq"]
+  },
+  "crm": {
+    "icp_tag": "morpho-lodging-boutique-hotel",
+    "source": "Morpho lead engine",
+    "note_header": "Lodging ICP: boutique hotel"
+  }
+}

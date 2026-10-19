@@ -36,6 +36,7 @@ from providers import llm_available, llm_json, llm_model
 
 FIELDS = ["priority", "fit_score", "company", "domain", "website", "city", "state", "size", "size_source",
           "size_confidence", "size_evidence", "segment", "flags", "sweet_spot", "business_type",
+          "buyer_type", "buyer_type_evidence", "ownership_signals", "portfolio_signals",
           "first_name", "last_name", "title", "title_tier", "email", "email_type", "email_status", "email_source",
           "linkedin_url", "phone", "tech", "ota_link_count", "direct_booking", "hiring_signals", "growth_signals",
           "buying_signals", "other_emails", "maps_url", "sources", "summary", "notes", "status", "reason"]
@@ -56,7 +57,13 @@ Size metric: {metric} ({label}). Acceptable range {min} to {max}. Sweet spot {sw
 business_type must be one of these keys:
 {types}
 
-Decision maker titles, best first: {primary}. Secondary: {secondary}."""
+Decision maker titles, best first: {primary}. Secondary: {secondary}.{buyers}"""
+
+BUYER_BLOCK = """
+
+buyer_type: who is on the other end of a call, judged from the site (owner story, number of properties, ownership history). Must be one of these keys, or null if there is no evidence:
+{buyer_types}
+Quote the phrase that decided it in buyer_type_evidence."""
 
 LLM_SCHEMA_BASE = {
     "type": "object",
@@ -70,6 +77,8 @@ LLM_SCHEMA_BASE = {
         "people": {"type": "array", "items": {"type": "object", "properties": {
             "name": {"type": "string"}, "title": {"type": ["string", "null"]}, "email": {"type": ["string", "null"]}},
             "required": ["name", "title", "email"], "additionalProperties": False}},
+        "buyer_type": {"type": ["string", "null"]},
+        "buyer_type_evidence": {"type": ["string", "null"]},
         "decision_maker": {"type": ["object", "null"], "properties": {
             "name": {"type": "string"}, "title": {"type": ["string", "null"]}},
             "required": ["name", "title"], "additionalProperties": False},
@@ -79,7 +88,8 @@ LLM_SCHEMA_BASE = {
         "one_line_summary": {"type": "string"},
     },
     "required": ["business_type", "fit_score", "fit_reason", "size_estimate", "size_evidence", "size_confidence",
-                 "people", "decision_maker", "buying_signals", "red_flags", "locations_served", "one_line_summary"],
+                 "buyer_type", "buyer_type_evidence", "people", "decision_maker", "buying_signals", "red_flags",
+                 "locations_served", "one_line_summary"],
     "additionalProperties": False,
 }
 PAGE_BUDGET = {"home": 3500, "people": 3000, "listing_index": 1800, "owners": 1500, "contact": 1000, "careers": 700}
@@ -88,7 +98,9 @@ PAGE_BUDGET = {"home": 3500, "people": 3000, "listing_index": 1800, "owners": 15
 def llm_system(icp):
     s = icp["size"]
     types = "\n".join(f"  {k}: {v}" for k, v in icp["business_types"]["options"].items())
-    return LLM_SYSTEM.format(name=icp["name"], description=icp["description"], offer=icp.get("offer_context", ""),
+    bt = icp.get("buyer_types", {}).get("options") or {}
+    buyers = BUYER_BLOCK.format(buyer_types="\n".join(f"  {k}: {v}" for k, v in bt.items())) if bt else ""
+    return LLM_SYSTEM.format(buyers=buyers,name=icp["name"], description=icp["description"], offer=icp.get("offer_context", ""),
                              metric=s["metric"], label=s.get("label", s["metric"]), min=s["min"], max=s["max"],
                              sweet_min=s.get("sweet_min", s["min"]), sweet_max=s.get("sweet_max", s["max"]),
                              types=types, primary=", ".join(icp["decision_makers"]["primary"]),
@@ -116,6 +128,9 @@ def run_llm(companies, sites, icp, out, ledger, force, limit):
     cache = read_json(out / "llm.json", {}) or {}
     schema = json.loads(json.dumps(LLM_SCHEMA_BASE))
     schema["properties"]["business_type"]["enum"] = list(icp["business_types"]["options"])
+    bt = icp.get("buyer_types", {}).get("options") or {}
+    if bt:
+        schema["properties"]["buyer_type"]["enum"] = list(bt) + [None]
     system = llm_system(icp)
     todo = [c for c in companies if sites.get(c["domain"], {}).get("pages") and (force or c["domain"] not in cache)]
     if limit:
@@ -226,8 +241,21 @@ def main(argv=None):
                   "hiring_signals": " | ".join(h["evidence"][:120] for h in site.get("hiring_signals", [])[:2]),
                   "growth_signals": " | ".join(h["evidence"][:120] for h in site.get("growth_signals", [])[:2]),
                   "buying_signals": " | ".join((llm or {}).get("buying_signals", [])[:4]),
+                  "ownership_signals": " | ".join(h["evidence"][:120] for h in site.get("ownership_signals", [])[:2]),
+                  "portfolio_signals": " | ".join(h["evidence"][:120] for h in site.get("portfolio_signals", [])[:2]),
                   "summary": (llm or {}).get("one_line_summary", ""), "fit_score": (llm or {}).get("fit_score", ""),
                   "business_type": (llm or {}).get("business_type", ""), "notes": enr.get("notes", "")})
+
+        # ---- buyer type (LLM first, then rule-of-thumb from site signals)
+        bt_cfg = icp.get("buyer_types") or {}
+        buyer = (llm or {}).get("buyer_type") if llm else None
+        buyer_ev = (llm or {}).get("buyer_type_evidence") or ""
+        if bt_cfg and not buyer:
+            if site.get("ownership_signals"):
+                buyer, buyer_ev = bt_cfg.get("on_ownership_change", ""), site["ownership_signals"][0]["evidence"][:160]
+            elif site.get("portfolio_signals"):
+                buyer, buyer_ev = bt_cfg.get("on_portfolio_signal", ""), site["portfolio_signals"][0]["evidence"][:160]
+        r.update({"buyer_type": buyer or "", "buyer_type_evidence": (buyer_ev or "")[:200]})
 
         # ---- exclusion
         reason = ""
@@ -246,14 +274,19 @@ def main(argv=None):
 
         # ---- size + segment
         n, src, conf, ev = choose_size(site, enr, llm, icp)
+        n_weak = False
         r.update({"size": n if n is not None else "", "size_source": src, "size_confidence": conf, "size_evidence": (ev or "")[:200]})
         flags = rule_flags(site, icp)
         r["flags"] = ";".join(flags)
         if n is not None:
             r["segment"] = assign_segment(n, icp)
             r["sweet_spot"] = "yes" if s.get("sweet_min", s["min"]) <= n <= s.get("sweet_max", s["max"]) else "no"
-            if not reason and not (s["min"] <= n <= s["max"]):
+            too_big = n > s["max"] and conf in ("high", "medium")
+            too_small = n < s["min"] and conf == "high"
+            if not reason and (too_big or too_small):
                 reason = f"{n} {s['metric']} outside {s['min']}-{s['max']}"
+            elif not reason and n < s["min"]:
+                n_weak = True
 
         # ---- decision maker
         people = []
@@ -308,8 +341,8 @@ def main(argv=None):
         verified_ok = conf in ("high", "medium") or (conf == "low" and args.allow_low_confidence) or not s.get("require_verified", True)
         if reason:
             r["status"], r["reason"] = "excluded", reason
-        elif n is None or not verified_ok:
-            r["status"], r["reason"] = "review", f"{s['metric']} not verified"
+        elif n is None or not verified_ok or n_weak:
+            r["status"], r["reason"] = "review", f"{s['metric']} not verified" + (f" (at least {n} seen, {conf} confidence)" if n_weak else "")
         elif not email:
             r["status"], r["reason"] = "needs_enrichment", "no email" + ("" if first else ", no named decision maker")
         elif not first or etype not in ("personal",):
@@ -327,6 +360,7 @@ def main(argv=None):
         score += 1 if r["tech"] else 0
         score += 1 if conf == "high" else 0
         score += int((llm or {}).get("fit_score") or 0) // 25
+        score += int((bt_cfg.get("priority_bonus") or {}).get(buyer or "", 0))
         r["priority"] = score
         rows.append(r)
 
@@ -363,6 +397,7 @@ def main(argv=None):
         "excluded": sum(1 for r in rows if r["status"] == "excluded"),
         "top_exclusion_reasons": top_reasons(rows),
         "segments_in_ready": seg_counts,
+        "buyer_types_in_ready": {b: sum(1 for r in ready if r["buyer_type"] == b) for b in (icp.get("buyer_types", {}).get("options") or {})},
         "segment_targets": {seg["key"]: round(seg.get("target_share", 0) * target) for seg in icp.get("segments", [])},
         "llm_used": bool(llm_cache),
     }

@@ -30,6 +30,10 @@ AGGREGATOR_DOMAINS = (
     "evolve.com", "vacasa.com", "hipcamp.com", "campspot.com", "rvshare.com", "outdoorsy.com",
     "theknot.com", "weddingwire.com", "zola.com", "eventective.com", "peerspace.com",
     "hostfully.com", "guesty.com", "hostaway.com", "lodgify.com", "ownerrez.com",
+    "campendium.com", "rvparky.com", "thedyrt.com", "goodsam.com", "allstays.com", "rvparkreviews.com",
+    "campspot.com", "reserveamerica.com", "recreation.gov", "koa.com", "glampinghub.com", "bedandbreakfast.com",
+    "bbonline.com", "innsofamerica.com", "selectregistry.com", "historichotels.org", "trivago.com", "kayak.com",
+    "priceline.com", "agoda.com", "hostelworld.com", "oyster.com", "travelocity.com", "orbitz.com",
 )
 
 EMAIL_RE = re.compile(r"[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}")

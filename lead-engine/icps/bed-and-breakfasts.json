@@ -1,0 +1,110 @@
+{
+  "slug": "bed-and-breakfasts",
+  "name": "Morpho Lodging: Bed and Breakfasts",
+  "description": "Independent bed and breakfasts in the US (not Maine) with roughly 3 to 15 rooms. Almost always an owner-operator, often a couple, frequently living on site, many of whom bought the B&B as a lifestyle change; a smaller group are portfolio owners holding several B&Bs or small inns in a destination town. The owner makes the decisions and is reachable. Operating, or opening within six months. Retainer fit is roughly 8 or more rooms, strong rates, or a portfolio; 3 to 7 rooms are cohort or QuickScan prospects and are kept, just segmented. Does NOT qualify: inns over 15 rooms (inn ICP), hotels, hostels, single Airbnb rooms in a private home with no business, B&B directories and associations, B&Bs run by a management company, retirement or care homes, restaurants that only serve breakfast, and properties listed for sale as closed. Room count must be verified from the website (a stated number or a rooms listing).",
+  "offer_context": "Morpho sells, in order of fit for this avatar, the Operator Control Room cohort (learn to run the operation with AI and keep control), the AI visibility QuickScan (direct bookings and whether AI search recommends them), and a fractional operations retainer at the top end (8+ rooms, strong rates, or a portfolio). Buying signals: owners personally replying to every review, limited or no online booking, OTA-heavy presence, a website not updated in years, losing a key part-time helper, a drop in bookings, burnout language ('we have not had a vacation in years'), deciding whether to sell.",
+  "search_terms": ["bed and breakfast", "bed & breakfast inn", "guest house", "B&B"],
+  "locations": {
+    "northeast": ["New Hampshire, USA", "Vermont, USA", "Massachusetts, USA", "Rhode Island, USA", "Connecticut, USA", "New York, USA", "New Jersey, USA", "Pennsylvania, USA"],
+    "mid_atlantic": ["Delaware, USA", "Maryland, USA", "Virginia, USA", "West Virginia, USA"],
+    "southeast": ["North Carolina, USA", "South Carolina, USA", "Georgia, USA", "Florida, USA", "Tennessee, USA", "Alabama, USA", "Kentucky, USA", "Mississippi, USA"],
+    "midwest": ["Ohio, USA", "Michigan, USA", "Indiana, USA", "Illinois, USA", "Wisconsin, USA", "Minnesota, USA", "Iowa, USA", "Missouri, USA"],
+    "plains": ["North Dakota, USA", "South Dakota, USA", "Nebraska, USA", "Kansas, USA", "Oklahoma, USA"],
+    "south_central": ["Texas, USA", "Arkansas, USA", "Louisiana, USA"],
+    "mountain_west": ["Colorado, USA", "Utah, USA", "Montana, USA", "Wyoming, USA", "Idaho, USA", "Nevada, USA", "Arizona, USA", "New Mexico, USA"],
+    "pacific": ["California, USA", "Oregon, USA", "Washington, USA"],
+    "bnb_towns": ["Cape May, NJ", "Newport, RI", "Nantucket, MA", "Provincetown, MA", "Lenox, MA", "Stowe, VT", "Woodstock, VT", "North Conway, NH", "Saratoga Springs, NY", "Cooperstown, NY", "Lancaster, PA", "Gettysburg, PA", "New Hope, PA", "Annapolis, MD", "St. Michaels, MD", "Williamsburg, VA", "Charlottesville, VA", "Asheville, NC", "Charleston, SC", "Savannah, GA", "St. Augustine, FL", "Eureka Springs, AR", "Fredericksburg, TX", "Galena, IL", "Saugatuck, MI", "Door County, WI", "Mendocino, CA", "Napa, CA", "Ashland, OR", "Port Townsend, WA", "Santa Fe, NM", "Durango, CO"]
+  },
+  "max_results_per_search": 60,
+  "batch_target": 100,
+  "size": {
+    "metric": "rooms",
+    "label": "guest rooms",
+    "min": 3,
+    "max": 15,
+    "sweet_min": 8,
+    "sweet_max": 15,
+    "require_verified": true,
+    "patterns": [
+      "(\\d{1,2})\\+?\\s*(?:beautifully |uniquely |individually |elegantly |comfortable |charming |newly |tastefully |luxurious |cozy |spacious |romantic |themed )?(?:appointed |decorated |renovated |restored |furnished )?(?:guest ?rooms|rooms and suites|rooms & suites|rooms|suites|accommodations|bedrooms|guestrooms|guest suites)\\b",
+      "(?:offers?|features?|with|has|boasts?|comprises?|home to|only|just|each of our|all)\\s*(\\d{1,2})\\+?\\s*(?:guest ?rooms|rooms|suites|accommodations|bedrooms)\\b",
+      "(\\d{1,2})-(?:room|suite|bedroom)\\b"
+    ],
+    "listing_url_patterns": ["/room/", "/rooms/", "/suite/", "/suites/", "/accommodations/", "/accommodation/", "/stay/", "/guest-rooms/", "/our-rooms/", "/lodging/"],
+    "listing_index_paths": ["/rooms", "/rooms-suites", "/rooms-and-suites", "/accommodations", "/accommodation", "/stay", "/guest-rooms", "/our-rooms", "/suites", "/lodging", "/rates", "/rooms-rates"]
+  },
+  "segments": [
+    {"key": "cohort_fit", "label": "3 to 7 rooms: cohort or QuickScan prospect", "min": 3, "max": 7, "target_share": 0.3},
+    {"key": "retainer_fit", "label": "8 to 15 rooms: retainer conversation", "min": 8, "max": 15, "target_share": 0.7},
+    {"key": "no_online_booking", "label": "No booking engine detected", "rule": "no_direct_booking", "target_share": 0.35}
+  ],
+  "buyer_types": {
+    "options": {
+      "owner_operator": "the innkeepers are the whole operation: breakfast, housekeeping, reservations, marketing; often a couple living on site",
+      "portfolio_owner_manager": "owns several B&Bs or small inns, usually in one destination town, with innkeepers or managers at each",
+      "recent_acquirer": "bought the B&B in the last 24 months ('new innkeepers', 'under new ownership', 'we purchased in 2025'), often a lifestyle change or first hospitality business"
+    },
+    "on_ownership_change": "recent_acquirer",
+    "on_portfolio_signal": "portfolio_owner_manager",
+    "priority_bonus": {"portfolio_owner_manager": 2, "recent_acquirer": 1}
+  },
+  "business_types": {
+    "accept": ["independent_bed_and_breakfast", "small_inn_or_guesthouse"],
+    "options": {
+      "independent_bed_and_breakfast": "owner-hosted B&B with 3 to 15 rooms and breakfast included",
+      "small_inn_or_guesthouse": "independent guest house or small inn in the same size band, breakfast optional",
+      "inn_or_hotel_large": "over 15 rooms, or clearly a hotel (inn or boutique hotel ICPs)",
+      "private_home_room_rental": "one or two rooms in a private home, an Airbnb host rather than a business",
+      "vacation_rental_or_cottages": "whole-house or cottage rentals with no hosted rooms",
+      "directory_or_association": "B&B directory, association or booking site listing many properties",
+      "third_party_managed": "run by a management company on behalf of the owner",
+      "care_home_or_other": "retirement home, care home, rehab or anything called a guest house that is not lodging",
+      "restaurant_only": "breakfast restaurant or cafe with no rooms",
+      "closed_or_for_sale": "closed, listed for sale as a turnkey business, or no longer accepting guests",
+      "other": "none of the above"
+    }
+  },
+  "decision_makers": {
+    "primary": ["innkeeper", "innkeepers", "owner", "co-owner", "owners", "proprietor", "proprietors", "host", "hosts", "founder"],
+    "secondary": ["manager", "general manager", "assistant innkeeper", "operations manager"]
+  },
+  "exclude": {
+    "domains": [
+      "bedandbreakfast.com", "bbonline.com", "innsofamerica.com", "selectregistry.com", "airbnb.com", "vrbo.com", "booking.com", "ihg.com", "hilton.com",
+      "choicehotels.com", "wyndhamhotels.com", "marriott.com", "sunriseseniorliving.com", "brookdale.com", "bnbfinder.com", "iloveinns.com"
+    ],
+    "category_keywords": [
+      "assisted living", "retirement", "nursing home", "rehabilitation", "hotel chain", "motel chain", "extended stay", "apartment",
+      "restaurant", "cafe", "real estate agency", "software", "hostel", "campground"
+    ],
+    "text_signals": [
+      "assisted living", "memory care", "senior living", "managed by", "franchise", "business for sale", "turnkey business opportunity", "permanently closed", "request a demo"
+    ]
+  },
+  "signals": {
+    "tech": {
+      "ThinkReservations": ["thinkreservations"], "ResNexus": ["resnexus"], "Little Hotelier": ["littlehotelier"], "innRoad": ["innroad"], "Cloudbeds": ["cloudbeds"],
+      "RezStream": ["rezstream"], "Eviivo": ["eviivo"], "Rezovation": ["rezovation"], "Lodgify": ["lodgify"], "Checkfront": ["checkfront"], "WebRezPro": ["webrezpro"],
+      "Beds24": ["beds24"], "Sirvoy": ["sirvoy"], "FreeToBook": ["freetobook"], "Innstyle": ["innstyle"], "Acorn / Insider Perks": ["acorn-is", "insiderperks"]
+    },
+    "direct_booking": ["book now", "book direct", "check availability", "check rates", "reserve now", "book your stay", "arrival date", "check-in date", "book online", "availability"],
+    "ota_links": ["booking.com/hotel", "expedia.com/", "hotels.com/", "tripadvisor.com/Hotel", "airbnb.com/rooms", "bedandbreakfast.com", "bbonline.com"],
+    "hiring": ["we're hiring", "we are hiring", "now hiring", "join our team", "housekeeper wanted", "housekeeping position", "assistant innkeeper", "innkeeper wanted", "part-time help", "work with us"],
+    "growth": ["newly renovated", "newly restored", "reopening", "new rooms", "new suite", "new cottage", "now offering", "expansion", "coming soon", "now open", "our newest"],
+    "ownership_change": ["under new ownership", "new ownership", "new owners", "new innkeepers", "your new innkeepers", "your hosts since", "we purchased", "purchased the inn", "we bought", "took over", "since 2025", "since 2026", "our first season", "recently acquired"],
+    "portfolio": ["our other inn", "our sister inn", "sister property", "our properties", "our inns", "our other properties", "also owned by", "our locations", "our family of", "our collection"]
+  },
+  "email": {
+    "role_prefixes": ["info", "hello", "contact", "reservations", "reservation", "book", "booking", "bookings", "stay", "office", "support", "team", "welcome", "inquiries", "relax", "innfo"],
+    "owner_prefixes": ["innkeeper", "innkeepers", "owner", "owners", "host", "hosts", "management", "manager"]
+  },
+  "pages": {
+    "people_keywords": ["about", "our-story", "story", "history", "innkeepers", "your-hosts", "hosts", "meet", "who-we-are", "owners", "the-inn"],
+    "contact_keywords": ["contact", "get-in-touch", "reach-us", "directions", "location", "policies", "faq"]
+  },
+  "crm": {
+    "icp_tag": "morpho-lodging-bnb",
+    "source": "Morpho lead engine",
+    "note_header": "Lodging ICP: bed and breakfast"
+  }
+}

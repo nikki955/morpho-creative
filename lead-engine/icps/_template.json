@@ -58,6 +58,19 @@
       "target_share": 0.1
     }
   ],
+  "buyer_types": {
+    "options": {
+      "owner_operator": "one property, owner on site most days; the owner is the front desk, maintenance escalation and marketing department",
+      "portfolio_owner_manager": "owns or manages two to roughly ten properties, usually with a manager at each",
+      "recent_acquirer": "bought the property in the last 24 months ('under new ownership', 'new owners')"
+    },
+    "on_ownership_change": "recent_acquirer",
+    "on_portfolio_signal": "portfolio_owner_manager",
+    "priority_bonus": {
+      "recent_acquirer": 2,
+      "portfolio_owner_manager": 1
+    }
+  },
   "business_types": {
     "accept": [
       "target_business"
@@ -130,6 +143,21 @@
       "acquired",
       "acquisition",
       "new market"
+    ],
+    "ownership_change": [
+      "under new ownership",
+      "new ownership",
+      "new owners",
+      "we purchased",
+      "took over",
+      "since 2025",
+      "since 2026"
+    ],
+    "portfolio": [
+      "our other locations",
+      "our properties",
+      "sister property",
+      "our locations"
     ]
   },
   "email": {

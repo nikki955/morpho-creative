@@ -1,0 +1,458 @@
+{
+  "slug": "rv-parks-campgrounds",
+  "name": "Morpho Lodging: RV Parks and Campgrounds",
+  "description": "Independently owned RV parks, campgrounds and RV resorts in the US (not Maine) with roughly 40 to 150 sites, or a smaller park of 25+ sites that has added cabins, park models or glamping units. Often a family business, sometimes second or third generation, or an investor who bought for land value and cash flow; owner-operators frequently live on site. The owner or owner group makes the decisions and is reachable. Operating now, or opening within six months with funding. Does NOT qualify: franchised or flagged parks (KOA, Jellystone, Sun Outdoors, Thousand Trails, Encore), parks run by a third-party management company the owner cannot hire around, state, county, federal or municipal parks, mobile home or long-term-only communities, RV dealers, RV storage, RV rental platforms, booking platforms and directories, and concept-stage or unfunded developments. Site count must be verified from the website (a stated number, a site map, or a listing of sites and cabins).",
+  "offer_context": "Morpho sells a fractional operations / COO retainer ($1,500+ a month): SOPs, reservation and site-assignment process, seasonal staffing and workamper onboarding, guest communication, reporting, and direct booking infrastructure, plus an AI visibility QuickScan. Buying signals: change of ownership, adding rental units or glamping, switching reservation systems, consolidator pressure, pre-season hiring, 'call to reserve' with no online booking, reviews about check-in confusion or unreturned calls.",
+  "search_terms": [
+    "RV park",
+    "campground",
+    "RV resort",
+    "RV campground",
+    "family campground"
+  ],
+  "locations": {
+    "northeast": [
+      "New Hampshire, USA",
+      "Vermont, USA",
+      "Massachusetts, USA",
+      "Rhode Island, USA",
+      "Connecticut, USA",
+      "New York, USA",
+      "New Jersey, USA",
+      "Pennsylvania, USA"
+    ],
+    "mid_atlantic": [
+      "Delaware, USA",
+      "Maryland, USA",
+      "Virginia, USA",
+      "West Virginia, USA"
+    ],
+    "southeast": [
+      "North Carolina, USA",
+      "South Carolina, USA",
+      "Georgia, USA",
+      "Florida, USA",
+      "Tennessee, USA",
+      "Alabama, USA",
+      "Kentucky, USA",
+      "Mississippi, USA"
+    ],
+    "midwest": [
+      "Ohio, USA",
+      "Michigan, USA",
+      "Indiana, USA",
+      "Illinois, USA",
+      "Wisconsin, USA",
+      "Minnesota, USA",
+      "Iowa, USA",
+      "Missouri, USA"
+    ],
+    "plains": [
+      "North Dakota, USA",
+      "South Dakota, USA",
+      "Nebraska, USA",
+      "Kansas, USA",
+      "Oklahoma, USA"
+    ],
+    "south_central": [
+      "Texas, USA",
+      "Arkansas, USA",
+      "Louisiana, USA"
+    ],
+    "mountain_west": [
+      "Colorado, USA",
+      "Utah, USA",
+      "Montana, USA",
+      "Wyoming, USA",
+      "Idaho, USA",
+      "Nevada, USA",
+      "Arizona, USA",
+      "New Mexico, USA"
+    ],
+    "pacific": [
+      "California, USA",
+      "Oregon, USA",
+      "Washington, USA"
+    ],
+    "drive_to_metros": [
+      "Asheville, NC",
+      "Blue Ridge, GA",
+      "Gatlinburg, TN",
+      "Outer Banks, NC",
+      "Lake George, NY",
+      "Poconos, PA",
+      "White Mountains, NH",
+      "Door County, WI",
+      "Traverse City, MI",
+      "Hill Country, TX",
+      "Moab, UT",
+      "Estes Park, CO",
+      "Florida Keys, FL",
+      "Hood River, OR"
+    ]
+  },
+  "max_results_per_search": 60,
+  "batch_target": 100,
+  "size": {
+    "metric": "sites",
+    "label": "RV and tent sites (plus cabins or rental units)",
+    "min": 25,
+    "max": 150,
+    "sweet_min": 40,
+    "sweet_max": 120,
+    "require_verified": true,
+    "patterns": [
+      "(\\d{1,3})\\+?\\s*(?:spacious |shaded |wooded |level |large |premium |big[- ]rig |full[- ]hook[- ]?up |pull[- ]thr(?:u|ough) |back[- ]in |waterfront |lakefront |rv |tent |camp|seasonal |transient )*(?:sites|campsites|rv sites|camp sites|hookups|hook-ups|pads|rv spaces|spaces)\\b",
+      "(?:over|more than|nearly|offers?|features?|with|has)\\s*(\\d{1,3})\\+?\\s*(?:rv |camp|tent )?(?:sites|campsites|hookups|pads|spaces|acres? and \\d+ sites)",
+      "(\\d{1,2})\\+?\\s*(?:rental |camping |rustic |deluxe |glamping )?(?:cabins|cottages|park models|yurts|glamping units|rental units)\\b",
+      "(\\d{1,3})-(?:site|space|pad|hookup)\\b"
+    ],
+    "listing_url_patterns": [
+      "/site/",
+      "/sites/",
+      "/cabin/",
+      "/cabins/",
+      "/rentals/",
+      "/accommodations/",
+      "/lodging/",
+      "/rv-sites/",
+      "/campsites/",
+      "/units/"
+    ],
+    "listing_index_paths": [
+      "/sites",
+      "/rv-sites",
+      "/campsites",
+      "/cabins",
+      "/rentals",
+      "/accommodations",
+      "/lodging",
+      "/rates",
+      "/site-map",
+      "/sitemap",
+      "/park-map",
+      "/camping"
+    ]
+  },
+  "segments": [
+    {
+      "key": "small_park_check_rentals",
+      "label": "25 to 39 sites: qualifies only with cabins or rental units",
+      "min": 25,
+      "max": 39,
+      "target_share": 0.15
+    },
+    {
+      "key": "core_park",
+      "label": "40 to 150 sites",
+      "min": 40,
+      "max": 150,
+      "target_share": 0.85
+    },
+    {
+      "key": "no_online_booking",
+      "label": "Call-to-reserve, no booking engine detected",
+      "rule": "no_direct_booking",
+      "target_share": 0.3
+    }
+  ],
+  "buyer_types": {
+    "options": {
+      "owner_operator": "one park, sometimes two, owner on site most days, often a family or a couple; the owner is the front desk, maintenance escalation and marketing department",
+      "portfolio_owner_manager": "owns or manages two to roughly ten parks, usually with a manager at each; thinks in properties and numbers",
+      "recent_acquirer": "bought the park in the last 24 months ('under new ownership', 'new owners', 'we purchased in 2025'); often an investor or first-time hospitality owner"
+    },
+    "on_ownership_change": "recent_acquirer",
+    "on_portfolio_signal": "portfolio_owner_manager",
+    "priority_bonus": {
+      "recent_acquirer": 2,
+      "portfolio_owner_manager": 1
+    }
+  },
+  "business_types": {
+    "accept": [
+      "independent_rv_park_or_campground",
+      "campground_with_rentals"
+    ],
+    "options": {
+      "independent_rv_park_or_campground": "independently owned RV park, campground or RV resort renting nightly, weekly or seasonal sites",
+      "campground_with_rentals": "independent campground that also rents cabins, park models, yurts or glamping units",
+      "franchise_or_flagged": "KOA, Jellystone, Sun Outdoors, Thousand Trails, Encore, Good Sam branded or any franchise location",
+      "third_party_managed": "operated by a management company on behalf of an absentee owner",
+      "public_park": "state, national, county, municipal or utility-owned campground",
+      "mobile_home_or_long_term_community": "manufactured home community or long-term-only RV lot rental, no transient guests",
+      "rv_dealer_storage_or_rental": "RV sales, service, storage or RV rental business",
+      "booking_platform_or_directory": "a website that lists many parks (Hipcamp, Campspot, The Dyrt, Good Sam, directories)",
+      "pre_opening_or_concept": "planned or under development with no operating season yet",
+      "other": "none of the above"
+    }
+  },
+  "decision_makers": {
+    "primary": [
+      "owner",
+      "co-owner",
+      "owners",
+      "proprietor",
+      "founder",
+      "co-founder",
+      "president",
+      "managing partner",
+      "managing member",
+      "principal",
+      "ceo"
+    ],
+    "secondary": [
+      "general manager",
+      "park manager",
+      "campground manager",
+      "operations manager",
+      "director of operations",
+      "resort manager",
+      "coo"
+    ]
+  },
+  "exclude": {
+    "domains": [
+      "koa.com",
+      "campjellystone.com",
+      "sunoutdoors.com",
+      "thousandtrails.com",
+      "rvonthego.com",
+      "encorervresorts.com",
+      "goodsam.com",
+      "campspot.com",
+      "hipcamp.com",
+      "thedyrt.com",
+      "campendium.com",
+      "reserveamerica.com",
+      "recreation.gov",
+      "rvshare.com",
+      "outdoorsy.com",
+      "cruiseamerica.com",
+      "campingworld.com",
+      "blueoxcampgrounds.com",
+      "roverpass.com",
+      "cabelas.com"
+    ],
+    "category_keywords": [
+      "rv dealer",
+      "rv repair",
+      "self storage",
+      "storage facility",
+      "mobile home park",
+      "state park",
+      "national park",
+      "county park",
+      "boat dealer",
+      "marina only",
+      "hotel",
+      "motel",
+      "real estate agency",
+      "software"
+    ],
+    "text_signals": [
+      "franchise opportunities",
+      "find a koa",
+      "jellystone park",
+      "sun outdoors",
+      "thousand trails membership",
+      "encore rv resort",
+      "operated by the national park service",
+      "state park reservations",
+      "long-term residents only",
+      "55+ community",
+      "request a demo"
+    ]
+  },
+  "signals": {
+    "tech": {
+      "Campspot": [
+        "campspot"
+      ],
+      "Newbook": [
+        "newbook"
+      ],
+      "Firefly": [
+        "fireflyreservations",
+        "firefly reservations"
+      ],
+      "ResNexus": [
+        "resnexus"
+      ],
+      "RMS": [
+        "rmscloud",
+        "rms cloud"
+      ],
+      "CampLife": [
+        "camplife",
+        "camp life"
+      ],
+      "Astra": [
+        "astracampground",
+        "astra campground"
+      ],
+      "Bonfire": [
+        "bonfirereservations"
+      ],
+      "RoverPass": [
+        "roverpass"
+      ],
+      "Campground Commander": [
+        "campgroundcommander"
+      ],
+      "GoodSam Campground Solutions": [
+        "campgroundsolutions"
+      ],
+      "ResNexus Campground": [
+        "resnexus.com/campground"
+      ],
+      "Cloudbeds": [
+        "cloudbeds"
+      ],
+      "Checkfront": [
+        "checkfront"
+      ],
+      "Little Hotelier": [
+        "littlehotelier"
+      ]
+    },
+    "direct_booking": [
+      "book now",
+      "book online",
+      "reserve online",
+      "check availability",
+      "make a reservation",
+      "book your site",
+      "reserve your site",
+      "online reservations",
+      "arrival date",
+      "check-in date"
+    ],
+    "ota_links": [
+      "hipcamp.com/",
+      "campspot.com/park",
+      "thedyrt.com/camping",
+      "airbnb.com/rooms",
+      "booking.com/hotel",
+      "goodsam.com/campgrounds",
+      "rvshare.com",
+      "campendium.com"
+    ],
+    "hiring": [
+      "we're hiring",
+      "we are hiring",
+      "now hiring",
+      "join our team",
+      "workamper",
+      "work camper",
+      "workampers wanted",
+      "seasonal positions",
+      "seasonal staff",
+      "camp host wanted",
+      "camphost",
+      "open positions"
+    ],
+    "growth": [
+      "new cabins",
+      "new sites",
+      "now offering",
+      "coming soon",
+      "expansion",
+      "expanding",
+      "added",
+      "new for 2026",
+      "new for 2027",
+      "new glamping",
+      "just added",
+      "recently added",
+      "phase two",
+      "phase 2"
+    ],
+    "ownership_change": [
+      "under new ownership",
+      "new ownership",
+      "new owners",
+      "new management",
+      "recently purchased",
+      "we purchased",
+      "we bought the park",
+      "took over",
+      "since 2025",
+      "since 2026",
+      "proud new owners"
+    ],
+    "portfolio": [
+      "our other parks",
+      "our other locations",
+      "our parks",
+      "our properties",
+      "sister park",
+      "sister property",
+      "our family of parks",
+      "our locations",
+      "also visit our",
+      "our campgrounds"
+    ]
+  },
+  "email": {
+    "role_prefixes": [
+      "info",
+      "hello",
+      "contact",
+      "reservations",
+      "reservation",
+      "book",
+      "booking",
+      "bookings",
+      "office",
+      "support",
+      "admin",
+      "team",
+      "camp",
+      "camping",
+      "stay",
+      "frontdesk",
+      "help",
+      "mail",
+      "welcome",
+      "inquiries",
+      "guestservices"
+    ],
+    "owner_prefixes": [
+      "owner",
+      "owners",
+      "management",
+      "manager",
+      "gm"
+    ]
+  },
+  "pages": {
+    "people_keywords": [
+      "about",
+      "our-story",
+      "history",
+      "team",
+      "our-team",
+      "meet",
+      "who-we-are",
+      "owners",
+      "family",
+      "staff"
+    ],
+    "contact_keywords": [
+      "contact",
+      "get-in-touch",
+      "reach-us",
+      "directions",
+      "location",
+      "reservations",
+      "policies",
+      "faq"
+    ]
+  },
+  "crm": {
+    "icp_tag": "morpho-lodging-rv-campground",
+    "source": "Morpho lead engine",
+    "note_header": "Lodging ICP: RV park / campground"
+  }
+}

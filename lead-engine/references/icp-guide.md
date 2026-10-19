@@ -40,18 +40,22 @@ Keywords that identify the about/team page and the contact/owners pages in URLs 
 **crm**
 `icp_tag` (every contact from this ICP gets it), `source`, `note_header`.
 
-## Suggested shapes for Nikki's likely profiles
+## buyer_types (optional)
 
-These are starting points, not finished files. Confirm each with her.
+Who is on the other end of the call, judged per prospect rather than per ICP. `options` is the menu the Claude qualifier picks from (with evidence); `on_ownership_change` and `on_portfolio_signal` are the rule-based fallbacks when the LLM pass is off, driven by `signals.ownership_change` and `signals.portfolio` phrases; `priority_bonus` nudges the sort. The value lands in the `buyer_type` column, the CRM tag `buyer-<type>`, the note, and the Instantly export. Nikki's lodging ICPs all use the same three: `owner_operator`, `portfolio_owner_manager`, `recent_acquirer` (from the "Morpho ICPs: Independent Lodging Owners" doc).
 
-| profile | metric | band | search terms | size patterns noun | look-alikes to reject |
-| --- | --- | --- | --- | --- | --- |
-| Boutique inns and B&Bs | rooms | 8 to 40 | bed and breakfast, inn, boutique hotel | rooms, suites, guest rooms | chain hotels, motels, single-room Airbnb |
-| RV parks and campgrounds | sites | 25 to 200 | RV park, campground, RV resort | sites, campsites, RV sites, full hookups | KOA-style franchises (unless owner-run), state parks, dealers |
-| Wedding and event venues | events per year or capacity | capacity 75 to 300 | wedding venue, event venue, barn venue | guests, seated, capacity | hotels with ballrooms, caterers, planners |
-| Glamping and cabin resorts | units | 5 to 40 | glamping, cabin rentals, cabin resort | cabins, tents, domes, yurts, units | single-cabin hosts, booking platforms |
-| Small multifamily operators | doors | 20 to 150 | property management company, apartment management | doors, units, apartments | national REITs, HOA managers, brokerages |
-| Hospitality-focused REI syndicators | assets | 2 to 15 | real estate investment firm, hospitality investment | properties, assets, hotels | brokers, lenders, crowdfunding platforms |
-| AI coaching: non-techy service business owners | employees | 1 to 20 | depends on vertical; pick 2 to 3 verticals per ICP | team of N, N employees | agencies that already sell AI, software companies |
+## The lodging ICPs (from the October 2026 ICP doc)
 
-For profiles where Google Maps is weak (syndicators, coaches' audiences), lean on `--source search` with sharper search terms, or `--import-csv` from her existing lists (the REI Owner's Club list, Facebook group members with websites).
+All five share: independent ownership (no flags, franchises or third-party management the owner cannot hire around), under 150 keys or sites per property, US-wide except Maine (the R3B1 study runs there), owner reachable, operating or opening within six months with funding. Budget floor (roughly $500K gross) is not detectable from a website and is left to the discovery call.
+
+| ICP file | metric | band (sweet spot) | segments | notes |
+| --- | --- | --- | --- | --- |
+| `rv-parks-campgrounds` | sites | 25 to 150 (40 to 120) | small_park_check_rentals 25-39, core_park 40-150, no_online_booking | The doc's open question on 150 vs 300 sites is one number in `size.max`. Parks at 25-39 sites only qualify if cabins or rental units push revenue up; the segment name is the reminder. |
+| `boutique-hotels` | keys | 15 to 150 (20 to 90) | small_boutique 15-50, mid_boutique 51-150, weak_direct_booking | Soft brands (Autograph, Curio, Tribute, Tapestry, Ascend, JdV) are excluded by text signal. Most likely avatar for a higher retainer. |
+| `glamping` | units | 8 to 50 (10 to 35) | early_scale 8-20, scaled 21-50, platform_dependent | Below 8 units routes to the cohort; the ICP simply excludes them. RV parks with a few glamping units belong to the RV ICP. |
+| `inns` | rooms | 10 to 40 (12 to 30) | inn_core 10-25, inn_large 26-40, inquiry_form_only | Innkeeper is a primary decision-maker title here. Restaurant and events signals ride along as tech (Tock, OpenTable, Resy) and growth phrases. |
+| `bed-and-breakfasts` | rooms | 3 to 15 (8 to 15) | cohort_fit 3-7, retainer_fit 8-15, no_online_booking | Kept deliberately wide: 3-7 rooms are cohort or QuickScan prospects and are tagged as such instead of being thrown away. |
+
+Shared location sets live in `_locations_us.json` for copy-paste. Each ICP also carries a metro list for dense drive-to markets, because a state-level Google query caps at 60 results. For big states run the metros, or pass `--states "Hill Country, TX" "Fredericksburg, TX"`.
+
+Other profiles Nikki may add later (STR managers already exist): small multifamily operators (doors), hospitality-focused REI syndicators (assets), and the AI-coaching audience of non-technical service business owners (employees, `require_verified: false`). For profiles where Google Maps is weak, lean on `--source search` or `--import-csv` from her existing lists (the REI Owner's Club list, group members with websites).

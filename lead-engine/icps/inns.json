@@ -1,0 +1,111 @@
+{
+  "slug": "inns",
+  "name": "Morpho Lodging: Inns",
+  "description": "Independent inns in the US (not Maine) with roughly 10 to 40 rooms, frequently with a restaurant, bar, weddings or events on site. Owner-operators or couples running the property, family-owned historic inns, or inns recently acquired by investors who see value in the building and location. The owner makes the decisions and is reachable. Operating, or opening within six months with funding. Does NOT qualify: inns that are part of a hotel brand or soft brand, properties run by a third-party management company the owner cannot hire around, bed and breakfasts under 10 rooms with no meaningful food or event revenue (those belong to the B&B ICP), hotels over 40 rooms (boutique hotel ICP), restaurants or wedding venues with no lodging, retirement or assisted living 'inns', and chain 'inn' branded motels (Holiday Inn, Hampton Inn, Comfort Inn, Days Inn, Quality Inn, Red Roof Inn, La Quinta Inn, Residence Inn, Fairfield Inn). Room count must be verified from the website (a stated number or a rooms listing).",
+  "offer_context": "Morpho sells a fractional operations retainer: documented systems so new hires stop learning by shadowing, event sales and booking process, kitchen and front-of-house staffing structure, visibility into which of lodging, food and events actually makes money, and the owner out of daily decisions. Buying signals: chef or manager departure, kitchen or housekeeping job posts, adding or dropping events, change of ownership, owner planning to sell, a soft wedding season, an inquiry form instead of real-time booking, owner names on every review reply.",
+  "search_terms": ["inn", "country inn", "historic inn", "inn and restaurant", "lodge"],
+  "locations": {
+    "northeast": ["New Hampshire, USA", "Vermont, USA", "Massachusetts, USA", "Rhode Island, USA", "Connecticut, USA", "New York, USA", "New Jersey, USA", "Pennsylvania, USA"],
+    "mid_atlantic": ["Delaware, USA", "Maryland, USA", "Virginia, USA", "West Virginia, USA"],
+    "southeast": ["North Carolina, USA", "South Carolina, USA", "Georgia, USA", "Florida, USA", "Tennessee, USA", "Alabama, USA", "Kentucky, USA", "Mississippi, USA"],
+    "midwest": ["Ohio, USA", "Michigan, USA", "Indiana, USA", "Illinois, USA", "Wisconsin, USA", "Minnesota, USA", "Iowa, USA", "Missouri, USA"],
+    "plains": ["North Dakota, USA", "South Dakota, USA", "Nebraska, USA", "Kansas, USA", "Oklahoma, USA"],
+    "south_central": ["Texas, USA", "Arkansas, USA", "Louisiana, USA"],
+    "mountain_west": ["Colorado, USA", "Utah, USA", "Montana, USA", "Wyoming, USA", "Idaho, USA", "Nevada, USA", "Arizona, USA", "New Mexico, USA"],
+    "pacific": ["California, USA", "Oregon, USA", "Washington, USA"],
+    "inn_country": ["Stowe, VT", "Woodstock, VT", "Manchester, VT", "White Mountains, NH", "Lake Sunapee, NH", "Berkshires, MA", "Cape Cod, MA", "Nantucket, MA", "Litchfield County, CT", "Hudson Valley, NY", "Finger Lakes, NY", "Lancaster County, PA", "Bucks County, PA", "Cape May, NJ", "Eastern Shore, MD", "Charlottesville, VA", "Shenandoah Valley, VA", "Asheville, NC", "Blue Ridge Parkway, NC", "Charleston, SC", "Savannah, GA", "Napa Valley, CA", "Mendocino, CA", "Willamette Valley, OR", "San Juan Islands, WA", "Door County, WI", "Galena, IL", "Fredericksburg, TX"]
+  },
+  "max_results_per_search": 60,
+  "batch_target": 100,
+  "size": {
+    "metric": "rooms",
+    "label": "guest rooms",
+    "min": 10,
+    "max": 40,
+    "sweet_min": 12,
+    "sweet_max": 30,
+    "require_verified": true,
+    "patterns": [
+      "(\\d{1,2})\\+?\\s*(?:beautifully |uniquely |individually |elegantly |comfortable |charming |newly |tastefully |luxurious |cozy |spacious )?(?:appointed |decorated |renovated |restored |furnished )?(?:guest ?rooms|rooms and suites|rooms & suites|rooms|suites|accommodations|bedrooms|guestrooms|cottages and rooms)\\b",
+      "(?:offers?|features?|with|has|boasts?|comprises?|home to|only|just)\\s*(\\d{1,2})\\+?\\s*(?:guest ?rooms|rooms|suites|accommodations)\\b",
+      "(\\d{1,2})-(?:room|suite|bedroom)\\b"
+    ],
+    "listing_url_patterns": ["/room/", "/rooms/", "/suite/", "/suites/", "/accommodations/", "/accommodation/", "/stay/", "/guest-rooms/", "/lodging/", "/cottage/", "/cottages/"],
+    "listing_index_paths": ["/rooms", "/rooms-suites", "/rooms-and-suites", "/accommodations", "/accommodation", "/stay", "/guest-rooms", "/lodging", "/suites", "/our-rooms", "/the-rooms", "/rates"]
+  },
+  "segments": [
+    {"key": "inn_core", "label": "10 to 25 rooms", "min": 10, "max": 25, "target_share": 0.65},
+    {"key": "inn_large", "label": "26 to 40 rooms", "min": 26, "max": 40, "target_share": 0.35},
+    {"key": "inquiry_form_only", "label": "No real-time booking engine detected", "rule": "no_direct_booking", "target_share": 0.25}
+  ],
+  "buyer_types": {
+    "options": {
+      "owner_operator": "innkeeper-owner or couple running the inn themselves, often living on site, often also running the kitchen or events",
+      "portfolio_owner_manager": "owns or manages two or more inns, or an inn plus other lodging, with a manager or innkeeper at each",
+      "recent_acquirer": "bought the inn in the last 24 months ('new innkeepers', 'under new ownership', 'we purchased the inn in 2025'), often an investor or first-time hospitality owner"
+    },
+    "on_ownership_change": "recent_acquirer",
+    "on_portfolio_signal": "portfolio_owner_manager",
+    "priority_bonus": {"recent_acquirer": 2, "portfolio_owner_manager": 1}
+  },
+  "business_types": {
+    "accept": ["independent_inn", "inn_with_restaurant_or_events"],
+    "options": {
+      "independent_inn": "independently owned inn with 10 to 40 guest rooms, lodging is the core business",
+      "inn_with_restaurant_or_events": "independent inn that also runs a restaurant, tavern, weddings or events on site",
+      "bed_and_breakfast_small": "under 10 rooms, breakfast included, owner-hosted, no significant food or event revenue (B&B ICP)",
+      "boutique_hotel_large": "over 40 rooms or clearly a hotel rather than an inn (boutique hotel ICP)",
+      "branded_or_chain_inn": "Holiday Inn, Hampton Inn, Comfort Inn, Quality Inn, Days Inn, Red Roof Inn, La Quinta, Residence Inn, Fairfield Inn or any brand",
+      "third_party_managed": "operated by a hotel or inn management company on behalf of the owner",
+      "restaurant_or_venue_only": "restaurant, tavern or wedding venue with no overnight rooms",
+      "senior_living_or_other_inn": "assisted living, retirement community, rehab or anything else called an inn that is not lodging",
+      "vacation_rental_company": "manages rental homes rather than running an inn",
+      "pre_opening_or_concept": "announced, under restoration or for sale with no operating rooms",
+      "other": "none of the above"
+    }
+  },
+  "decision_makers": {
+    "primary": ["innkeeper", "innkeepers", "owner", "co-owner", "owners", "proprietor", "proprietors", "founder", "managing partner", "principal", "president", "ceo"],
+    "secondary": ["general manager", "inn manager", "manager", "director of operations", "operations manager", "coo", "executive chef"]
+  },
+  "exclude": {
+    "domains": [
+      "ihg.com", "holidayinn.com", "hilton.com", "choicehotels.com", "wyndhamhotels.com", "redroof.com", "marriott.com", "bestwestern.com",
+      "selectregistry.com", "innsofamerica.com", "bbonline.com", "bedandbreakfast.com", "stayinnvermont.com", "sunriseseniorliving.com", "brookdale.com"
+    ],
+    "category_keywords": [
+      "assisted living", "retirement", "nursing home", "rehabilitation", "motel chain", "extended stay", "apartment", "restaurant only",
+      "wedding venue only", "real estate agency", "software", "hostel", "campground"
+    ],
+    "text_signals": [
+      "ihg one rewards", "hilton honors", "choice privileges", "wyndham rewards", "marriott bonvoy", "best western rewards",
+      "assisted living", "memory care", "senior living", "managed by", "franchise", "request a demo"
+    ]
+  },
+  "signals": {
+    "tech": {
+      "ThinkReservations": ["thinkreservations"], "ResNexus": ["resnexus"], "innRoad": ["innroad"], "Cloudbeds": ["cloudbeds"], "Little Hotelier": ["littlehotelier"],
+      "WebRezPro": ["webrezpro"], "RezStream": ["rezstream"], "Eviivo": ["eviivo"], "Lodgify": ["lodgify"], "Checkfront": ["checkfront"],
+      "SiteMinder": ["siteminder", "thebookingbutton"], "Mews": ["mews.com"], "Rezovation": ["rezovation"], "GuestCentric": ["guestcentric"], "Tock": ["exploretock"], "OpenTable": ["opentable"], "Resy": ["resy.com"]
+    },
+    "direct_booking": ["book now", "book direct", "check availability", "check rates", "reserve now", "book your stay", "arrival date", "check-in date", "book online", "availability"],
+    "ota_links": ["booking.com/hotel", "expedia.com/", "hotels.com/", "tripadvisor.com/Hotel", "airbnb.com/rooms", "bedandbreakfast.com"],
+    "hiring": ["we're hiring", "we are hiring", "now hiring", "join our team", "open positions", "line cook", "sous chef", "housekeeper wanted", "housekeeping position", "innkeeper wanted", "assistant innkeeper", "employment opportunities", "work with us"],
+    "growth": ["newly renovated", "newly restored", "reopening", "grand reopening", "new rooms", "new cottages", "now hosting weddings", "event barn", "new restaurant", "expansion", "coming soon", "now open", "our newest"],
+    "ownership_change": ["under new ownership", "new ownership", "new owners", "new innkeepers", "your new innkeepers", "we purchased the inn", "purchased the inn", "we bought the inn", "took over", "since 2025", "since 2026", "our first season", "recently acquired"],
+    "portfolio": ["our other inn", "our sister inn", "sister property", "our properties", "our inns", "our other properties", "also owned by", "our locations", "our family of inns", "our collection"]
+  },
+  "email": {
+    "role_prefixes": ["info", "hello", "contact", "reservations", "reservation", "book", "booking", "bookings", "stay", "frontdesk", "office", "support", "team", "events", "weddings", "dining", "restaurant", "welcome", "inquiries", "guestservices"],
+    "owner_prefixes": ["innkeeper", "innkeepers", "owner", "owners", "management", "manager", "gm"]
+  },
+  "pages": {
+    "people_keywords": ["about", "our-story", "story", "history", "innkeepers", "meet", "team", "our-team", "who-we-are", "owners", "the-inn"],
+    "contact_keywords": ["contact", "get-in-touch", "reach-us", "directions", "location", "policies", "faq", "press"]
+  },
+  "crm": {
+    "icp_tag": "morpho-lodging-inn",
+    "source": "Morpho lead engine",
+    "note_header": "Lodging ICP: inn"
+  }
+}
