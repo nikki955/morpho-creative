@@ -58,7 +58,7 @@ Evidence: help article field lists, FAQ ("work email, job title, company name, l
 | Work email, waterfall over 5+ providers | enrich | must | yes | partial | emails actually published on the site, name-matched to the decision maker; generic inbox as fallback; no guessing |
 | Email verification | enrich | must | yes (0.25 credits) | yes, free | syntax, MX, optional SMTP probe with catch-all detection |
 | AI research columns | enrich | should | yes (0.5 credits) | yes | `qualify --llm`: business type, fit score, size with evidence, people, buying signals, one-line summary |
-| Credit meter | billing | should | yes | yes | `costs.json` ledger per run and `status` |
+| Credit meter | billing | should | yes | yes | `costs.json` ledger per run, `status`, a printed plan before any paid call, and a per-run request cap |
 | Export CSV | export | must | yes | yes | `export_instantly.csv` in their import shape, `export_leads.csv` full |
 | Push to CRM | export | must | yes | yes | FG Funnels (HighLevel) upsert + tags + note |
 | Push to a sending campaign | export | must | yes | no, by design | Instantly, or FG Funnels workflows, does the sending |
@@ -68,7 +68,7 @@ Evidence: help article field lists, FAQ ("work email, job title, company name, l
 
 | skip | why | substitute |
 | --- | --- | --- |
-| The 610M contact database | licensed data, years of aggregation | Google Places (free tier) + web search + the company's own website. Slower, but the ICPs here are local businesses with 3 to 20 staff, which contact databases cover badly anyway |
+| The 610M contact database | licensed data, years of aggregation | Google Places as a transient pointer (place_id only is kept) + web search + the company's own website. Slower, but the ICPs here are local businesses with 3 to 20 staff, which contact databases cover badly anyway |
 | Waterfall email providers | paid partner contracts | only report emails that were actually seen, with the source URL. For a personal email on a 15-person company, the about page beats most databases |
 | LinkedIn person data | terms of service | public search snippets scoped to linkedin.com/in, name and title only, no scraping of profiles |
 | Real-time verification at scale | their infrastructure | DNS + optional SMTP; port 25 is often blocked on home networks, in which case `mx_ok` is as far as it goes |

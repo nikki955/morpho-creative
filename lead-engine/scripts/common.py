@@ -271,15 +271,63 @@ def http_retry(fn, tries=4, base_wait=2.0):
     return resp
 
 
+# ---------------------------------------------------------------- paid-request budget
+class BudgetExceeded(RuntimeError):
+    pass
+
+
+class RequestBudget:
+    """Hard cap on paid API requests for one run. Every metered call takes one unit first."""
+
+    def __init__(self, max_requests, label="paid requests"):
+        self.max, self.used, self.label = int(max_requests), 0, label
+
+    def take(self, n=1):
+        if self.used + n > self.max:
+            raise BudgetExceeded(f"{self.label} cap of {self.max} reached ({self.used} used). "
+                                 f"Raise --max-requests deliberately if you want more.")
+        self.used += n
+
+    @property
+    def left(self):
+        return self.max - self.used
+
+
+# Hosts whose presence as a link, iframe or form target is evidence that a guest can book here
+# directly (a reservation engine), as opposed to a PMS script tag, which proves nothing about booking.
+BOOKING_ENGINE_HOSTS = (
+    "thinkreservations.com", "resnexus.com", "hotels.cloudbeds.com", "cloudbeds.com/reservation", "campspot.com/book",
+    "campspot.com/park", "newbook.cloud", "newbookapp.com", "innroad.com", "webrezpro.com", "thebookingbutton.com",
+    "direct-book.com", "littlehotelier.com", "lodgify.com", "ownerrez.com", "hostaway.com", "guestybookings.com",
+    "bookings.guesty.com", "hospitable.com/", "checkfront.com", "rezstream.com", "eviivo.com", "mews.com",
+    "synxis.com", "travelclick.com", "reservations.travelclick", "roverpass.com", "campgroundcommander.com",
+    "fireflyreservations.com", "bookeo.com", "peek.com", "fareharbor.com", "streamlinevrs.com", "trackhs.com",
+    "escapia.com", "liverez.com", "rezfusion.com", "beds24.com", "smoobu.com", "uplisting.io", "hostfully.com",
+    "sirvoy.com", "freetobook.com", "innstyle.com", "rezovation.com", "secure.rezstream", "reservations.resnexus",
+    "book.stripe.com", "squareup.com/appointments", "bookingbutton", "availability.", "rmscloud.com", "rms.online",
+    "campspot", "bonfirereservations", "camplife.com", "astracampground", "reserveamerica.com", "booking.vacasa",
+)
+# Subdomains of the company's own domain that almost always host a booking engine.
+BOOKING_SUBDOMAIN_PREFIXES = ("book.", "booking.", "bookings.", "reservations.", "reservation.", "reserve.", "secure.", "availability.", "stay.")
+# Internal paths that suggest a booking page exists (weak evidence on their own).
+BOOKING_PATHS = ("/book", "/book-now", "/booknow", "/booking", "/bookings", "/reservations", "/reservation", "/reserve",
+                 "/availability", "/rates-availability", "/book-online", "/online-booking", "/check-availability")
+CALL_TO_RESERVE_PHRASES = ("call to reserve", "call for reservations", "call to book", "call us to book", "call us to reserve",
+                           "reservations by phone", "phone reservations only", "please call", "email to reserve",
+                           "inquire about availability", "request a reservation", "reservation request form", "inquiry form")
+
+
 # ---------------------------------------------------------------- cost ledger
 # Rough unit prices so each run can report what it cost. Edit if your plans differ.
 UNIT_COST_USD = {
-    "places_request": 0.035,        # Text Search Enterprise after the 1,000 free/month
-    "firecrawl_credit": 0.0167,     # Hobby plan: $16 / 3,000 credits (Standard is ~$0.0008)
+    "places_request": 0.035,        # Text Search Enterprise SKU list price ($35 per 1,000) with no allowance assumed
+    "firecrawl_credit": 0.0167,     # Hobby plan: $16 / 3,000 credits (larger plans are cheaper per credit)
     "llm_input_mtok": 0.10,         # Claude Haiku 5.5 per 1M input tokens
     "llm_output_mtok": 0.50,        # Claude Haiku 5.5 per 1M output tokens
 }
-FREE_PER_MONTH = {"places_request": 1000, "firecrawl_credit": 1000}
+# Monthly allowances the providers advertised when this was written. They are NOT assumed in any estimate:
+# a provider can change them, a key can be on a different plan, and other projects share the same allowance.
+ADVERTISED_ALLOWANCE = {"places_request": 1000, "firecrawl_credit": 1000}
 
 
 class Ledger:
@@ -302,9 +350,8 @@ class Ledger:
                 lines.append(f"{unit}: {n:,} tokens  ~${usd:.3f}")
             else:
                 usd = n * price
-                free = FREE_PER_MONTH.get(unit)
-                note = f" (first {free:,}/month are free on the provider's free tier)" if free else ""
-                lines.append(f"{unit}: {n:,}  ~${usd:.2f} at list price{note}")
+                lines.append(f"{unit}: {n:,}  ~${usd:.2f} at list price")
             total += usd
-        lines.append(f"estimated spend this run (worst case, ignoring free tiers): ${total:.2f}")
+        lines.append(f"estimated spend this run at list price: ${total:.2f} (any monthly allowance on your "
+                     f"account would reduce this; check the provider console, do not assume it)")
         return "\n".join(lines)

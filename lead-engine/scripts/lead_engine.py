@@ -4,17 +4,22 @@
   lead_engine.py doctor                                  check keys, libraries, which sources are live
   lead_engine.py list-icps
   lead_engine.py new-icp --slug rv-park-owners [--prompt "..."]   draft an ICP file (Claude drafts it if a key exists)
-  lead_engine.py discover --icp <slug> [--run-id ID] [--regions a,b] [--source places|search|both] [--import-csv f]
+  lead_engine.py discover --icp <slug> --run-id ID --source places --regions KEY | --states "Vermont, USA" [--confirm] [--max-requests N]
+  lead_engine.py discover --icp <slug> --run-id ID --import-csv file.csv        (no region, no API)
   lead_engine.py read     --icp <slug> [--run-id ID] [--firecrawl-fallback]
   lead_engine.py qualify  --icp <slug> [--run-id ID] [--llm]
   lead_engine.py enrich   --icp <slug> [--run-id ID] --verify-size | --find-people [--linkedin] [--max N]
   lead_engine.py verify   --icp <slug> [--run-id ID] [--smtp]
   lead_engine.py export   --icp <slug> [--run-id ID]
-  lead_engine.py push     --icp <slug> [--run-id ID] [--live] [--limit N]
+  lead_engine.py push     --icp <slug> --run-id ID                 dry run: CRM lookups, suppression check, proposed tags
+  lead_engine.py push     --icp <slug> --run-id ID --live --approve ID [--limit N]
   lead_engine.py status   --icp <slug> [--run-id ID]
-  lead_engine.py run      --icp <slug> [--run-id ID] [--regions ...] [--llm]   discover > read > qualify > verify > export
+  lead_engine.py scrub-places --icp <slug> --run-id ID --yes      strip Google Places content from an older run
+  lead_engine.py run      --icp <slug> --run-id ID (--source places --regions KEY --confirm | --import-csv f) [--llm]
+                          discover > read > qualify > verify > qualify > export. Never pushes.
 
-Every step is resumable and idempotent. The run id doubles as the CRM batch tag.
+Every step is resumable and idempotent. The run id doubles as the CRM batch tag. API discovery always needs an
+explicit region or state list and --confirm; nothing paid runs by default.
 """
 import importlib
 import json
@@ -24,7 +29,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from common import ICP_DIR, Ledger, default_run_id, env, list_icps, load_icp, read_json, run_dir, validate_icp  # noqa: E402
+from common import ICP_DIR, SKILL_DIR, Ledger, default_run_id, env, list_icps, load_icp, read_json, run_dir, validate_icp, write_json  # noqa: E402
 
 STEPS = {"discover": "discover", "read": "reader", "qualify": "qualify", "enrich": "enrich", "verify": "verify"}
 
@@ -55,6 +60,11 @@ def doctor():
     print(f"  LLM model for --llm: {env('LEAD_ENGINE_MODEL', 'claude-haiku-5-5')}")
     print(f"  ICPs: {', '.join(list_icps()) or 'none yet'}")
     print(f"  runs go to: {env('LEAD_ENGINE_DIR', str(Path.cwd() / 'leads'))}")
+    g = read_json(SKILL_DIR / "config" / "crm_guardrails.json", {}) or {}
+    live = [k for k in (g.get("live_trigger_tags") or {}) if not k.startswith("_")]
+    print(f"  CRM guardrails: {len(live)} live trigger tags refused ({', '.join(live)}), "
+          f"{len((g.get('planned_track_tags') or {}).get('tags') or [])} reserved track tags refused")
+    print("  Google Places: only place_id is stored; names, phones, addresses come from the company website")
 
 
 NEW_ICP_SCHEMA = {
@@ -182,13 +192,16 @@ def status(slug_, run_id):
 
 
 def run_all(argv):
-    """discover > read > qualify > verify > export with shared flags."""
+    """discover > read > qualify > verify > qualify > export with shared flags. Never pushes to the CRM."""
     import argparse
     ap = argparse.ArgumentParser()
     ap.add_argument("--icp", required=True)
     ap.add_argument("--run-id")
-    ap.add_argument("--regions")
-    ap.add_argument("--source")
+    ap.add_argument("--regions", help="required for API discovery; no default")
+    ap.add_argument("--states", nargs="*")
+    ap.add_argument("--source", choices=["places", "search", "both", "import"])
+    ap.add_argument("--confirm", action="store_true", help="execute the paid discovery plan")
+    ap.add_argument("--max-requests", type=int, default=100)
     ap.add_argument("--import-csv")
     ap.add_argument("--llm", action="store_true")
     ap.add_argument("--firecrawl-fallback", action="store_true")
@@ -197,13 +210,63 @@ def run_all(argv):
     icp = load_icp(a.icp)
     run_id = a.run_id or default_run_id(icp["slug"])
     base = ["--icp", a.icp, "--run-id", run_id]
-    d = base + (["--regions", a.regions] if a.regions else []) + (["--source", a.source] if a.source else []) + (["--import-csv", a.import_csv] if a.import_csv else [])
+    d = base + ["--max-requests", str(a.max_requests)]
+    d += ["--regions", a.regions] if a.regions else []
+    d += ["--states", *a.states] if a.states else []
+    d += ["--source", a.source] if a.source else []
+    d += ["--import-csv", a.import_csv] if a.import_csv else []
+    d += ["--confirm"] if a.confirm else []
     importlib.import_module("discover").main(d)
+    out = run_dir(run_id)
+    if not (read_json(out / "companies.json", []) or []):
+        print("No companies yet (plan printed without --confirm, or nothing found). Stopping before read.")
+        return
     importlib.import_module("reader").main(base + ["--workers", str(a.workers)] + (["--firecrawl-fallback"] if a.firecrawl_fallback else []))
     importlib.import_module("qualify").main(base + (["--llm"] if a.llm else []))
-    importlib.import_module("verify").main(base)
+    importlib.import_module("verify").main(base + ["--all"])
+    importlib.import_module("qualify").main(base)  # re-qualify so failed emails leave leads.csv before export
     importlib.import_module("crm").main(["export"] + base)
-    print(f"\nDone. Next: review leads.csv, then `lead_engine.py enrich` for the gaps, then `lead_engine.py push` (dry run first).")
+    print("\nDone. Next: review leads.csv, `enrich` for the gaps, then `push` (dry run first; --live needs --approve <run-id>).")
+
+
+PLACES_ONLY_FIELDS = ("rating", "reviews", "maps_url", "category", "address", "apify_emails", "apify_people", "gmb_listings")
+
+
+def scrub_places(slug_, run_id, yes):
+    """Strip Google Places content from a run folder created before the retention redesign."""
+    icp = load_icp(slug_)
+    out = run_dir(run_id)
+    companies = read_json(out / "companies.json", []) or []
+    raw = read_json(out / "raw_discovery.json", []) or []
+    raw_places = [r for r in raw if r.get("_source") == "places" and not r.get("_marker")]
+    affected = [c for c in companies if "places" in (c.get("sources") or []) or any(k in c for k in PLACES_ONLY_FIELDS)]
+    print(f"Run {run_id}: {len(companies)} companies, {len(affected)} carry Places-derived fields, "
+          f"{len(raw_places)} raw Places records in raw_discovery.json")
+    if not affected and not raw_places:
+        print("Nothing to scrub.")
+        return
+    if not yes:
+        print("Dry run. Add --yes to rewrite companies.json and raw_discovery.json in place. site_data, leads.csv and")
+        print("the CRM are not touched; rerun qualify afterwards so the CSVs are rebuilt from website data only.")
+        return
+    for c in companies:
+        if c not in affected:
+            continue
+        site = read_json(out / "site_data" / f"{c['domain']}.json", {}) or {}
+        for k in PLACES_ONLY_FIELDS:
+            c.pop(k, None)
+        if "places" in (c.get("sources") or []):
+            c["sources"] = [("website_via_places" if s == "places" else s) for s in c["sources"]]
+            c["name"] = site.get("org_name") or site.get("title") or c["domain"]
+            c["phone"] = (site.get("phones") or [None])[0]
+            addr = site.get("jsonld_address") or {}
+            c["city"], c["state"], c["postal_code"] = addr.get("city"), addr.get("state"), addr.get("postal_code")
+            c["attribution"] = {"name": "company website", "phone": "company website", "address": "company website (JSON-LD)",
+                                "domain": "company website", "scrubbed": "Places fields removed by scrub-places"}
+    raw = [r for r in raw if not (r.get("_source") == "places" and not r.get("_marker"))]
+    write_json(out / "companies.json", companies)
+    write_json(out / "raw_discovery.json", raw)
+    print(f"Scrubbed {len(affected)} companies and removed {len(raw_places)} raw Places records. Now rerun: qualify --icp {slug_} --run-id {run_id}")
 
 
 def main():
@@ -236,6 +299,14 @@ def main():
         return status(a.icp, a.run_id)
     if cmd == "run":
         return run_all(rest)
+    if cmd == "scrub-places":
+        import argparse
+        ap = argparse.ArgumentParser()
+        ap.add_argument("--icp", required=True)
+        ap.add_argument("--run-id", required=True)
+        ap.add_argument("--yes", action="store_true")
+        a = ap.parse_args(rest)
+        return scrub_places(a.icp, a.run_id, a.yes)
     if cmd in ("export", "push"):
         return importlib.import_module("crm").main([cmd] + rest)
     if cmd in STEPS:

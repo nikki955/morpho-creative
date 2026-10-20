@@ -1,0 +1,35 @@
+{
+  "_about": "Guardrails for crm.py push. Built from CRM-Track-Rebuild-Plan-2026-10-16.md and CRM-Routing-Audit-2026-10-18.md. Edit when the CRM's tracks change. Nothing here changes the CRM; it only decides what this engine refuses to do.",
+
+  "live_trigger_tags": {
+    "_about": "Tags that a PUBLISHED workflow listens for as of 2026-10-18. Adding one of these is a SEND action. The engine will never add them, and refuses any batch tag that equals one.",
+    "aio-sent": "AIO - Direct Outreach Tracker: sends one email immediately",
+    "partner-sent": "AIO - Partnership Tracker: sends one email immediately",
+    "goodwill": "AIO-courtesy-heads-up: sends one email immediately"
+  },
+
+  "planned_track_tags": {
+    "_about": "Track and step tags from the rebuild plan. Some trigger nothing today, but the plan reserves them for workflows, so the engine never adds them either.",
+    "tags": ["morpho-ch", "source-r3b1-study", "track-hospitality", "track-partner", "track-courtesy", "track-newsletter",
+             "track-warm", "replied-hospitality", "replied", "warm-1-sent", "warm-2-sent", "courtesy-sent", "no-response",
+             "send-approved", "do-not-contact", "aio-partner-batch1"]
+  },
+
+  "protected_prefixes": ["track-", "aio-", "partner-", "replied", "warm-", "source-", "send-", "goodwill", "courtesy", "morpho-ch"],
+
+  "suppression": {
+    "_about": "If the existing contact matches any of these, it is skipped and the reason is recorded. Checked before every live upsert or tag add.",
+    "dnd_flag": true,
+    "dnd_email_channel": true,
+    "tag_substrings": ["unsubscrib", "bounce", "do-not-contact", "do not contact", "dnc", "opt-out", "optout", "opted out", "spam", "complain", "suppress", "deceased", "never email"]
+  },
+
+  "existing_relationship": {
+    "_about": "An existing contact carrying any of these is already in a Morpho track, a pipeline or an old list. The engine skips them by default (reason recorded) so a lead-gen batch never re-labels a managed relationship. --update-existing adds the engine's tags only, never overwrites fields.",
+    "tag_substrings": ["morpho-ch", "track-", "aio-", "partner-", "replied", "warm-", "goodwill", "courtesy", "source-r3b1", "no-response", "s2", "oc", "tc", "connection code", "midcoast-maine", "realtor", "str-portfolio", "pressure-done", "gemini-workshop", "lead magnet"]
+  },
+
+  "engine_tag_prefixes": ["seg-", "buyer-", "email-", "dm-", "tech-", "size-", "signal-"],
+
+  "workflow_trigger_note": "GoHighLevel workflows can be triggered by ANY 'Contact Tag added' event. The lists above are what was documented on 2026-10-18. Before every --live push, open Automation > Workflows and confirm no published workflow listens for an ICP tag, a batch tag, or any engine_tag_prefixes tag. The engine cannot read workflows with the current token (View Workflows returned 401)."
+}

@@ -38,7 +38,7 @@ FIELDS = ["priority", "fit_score", "company", "domain", "website", "city", "stat
           "size_confidence", "size_evidence", "segment", "flags", "sweet_spot", "business_type",
           "buyer_type", "buyer_type_evidence", "ownership_signals", "portfolio_signals",
           "first_name", "last_name", "title", "title_tier", "email", "email_type", "email_status", "email_source",
-          "linkedin_url", "phone", "tech", "ota_link_count", "direct_booking", "hiring_signals", "growth_signals",
+          "linkedin_url", "phone", "tech", "ota_link_count", "direct_booking", "booking_evidence", "hiring_signals", "growth_signals",
           "buying_signals", "other_emails", "maps_url", "sources", "summary", "notes", "status", "reason"]
 
 LLM_SYSTEM = """You qualify small businesses against an ideal customer profile (ICP) from text copied off their websites.
@@ -116,7 +116,8 @@ def llm_user(company, site):
              "people_found_by_heuristics": [{"name": p["name"], "title": p.get("title")} for p in site.get("people", [])[:8]],
              "numbers_found_by_regex": [{"n": c["n"], "evidence": c["evidence"]} for c in site.get("size_claims", [])[:6]],
              "listing_urls_in_sitemap": site.get("listing_url_count"), "index_total_text": site.get("index_total_text"),
-             "tech_detected": site.get("tech_detected"), "direct_booking_detected": site.get("direct_booking")}
+             "tech_detected_note": "software fingerprints only; not proof a guest can book here",
+             "tech_detected": site.get("tech_detected"), "direct_booking_path": booking_status(site)}
     parts.append("Extractor hints (verify against the text, do not trust blindly): " + json.dumps(hints))
     for pg in site.get("pages", []):
         budget = PAGE_BUDGET.get(pg["kind"], 1000)
@@ -190,10 +191,24 @@ def assign_segment(n, icp):
     return ""
 
 
+def booking_status(site):
+    """confirmed | none_found | unknown. Older site_data stored a boolean, which is treated as unknown unless True."""
+    b = site.get("booking")
+    if isinstance(b, dict) and b.get("status"):
+        return b["status"]
+    v = site.get("direct_booking")
+    if v is True:
+        return "confirmed"
+    if isinstance(v, str) and v in ("confirmed", "none_found", "unknown"):
+        return v
+    return "unknown" if site else ""
+
+
 def rule_flags(site, icp):
+    """The no_direct_booking rule only fires on positive evidence of absence, never on 'unknown'."""
     flags = []
     for seg in icp.get("segments", []):
-        if seg.get("rule") == "no_direct_booking" and site and not site.get("direct_booking"):
+        if seg.get("rule") == "no_direct_booking" and site and booking_status(site) == "none_found":
             flags.append(seg["key"])
     return flags
 
@@ -237,7 +252,8 @@ def main(argv=None):
                   "state": c.get("state") or (site.get("jsonld_address") or {}).get("state") or "",
                   "maps_url": c.get("maps_url") or "", "sources": ";".join(c.get("sources", [])),
                   "tech": ";".join(site.get("tech_detected") or []), "ota_link_count": site.get("ota_link_count", ""),
-                  "direct_booking": "yes" if site.get("direct_booking") else ("no" if site else ""),
+                  "direct_booking": booking_status(site),
+                  "booking_evidence": "; ".join(((site.get("booking") or {}).get("evidence") or (site.get("booking") or {}).get("call_to_reserve") or [])[:2])[:200],
                   "hiring_signals": " | ".join(h["evidence"][:120] for h in site.get("hiring_signals", [])[:2]),
                   "growth_signals": " | ".join(h["evidence"][:120] for h in site.get("growth_signals", [])[:2]),
                   "buying_signals": " | ".join((llm or {}).get("buying_signals", [])[:4]),

@@ -29,8 +29,9 @@ from urllib.parse import unquote, urljoin, urlparse
 import requests
 from bs4 import BeautifulSoup
 
-from common import (Ledger, PHONE_RE, default_run_id, env, extract_emails, load_icp, read_json, root_domain,
-                    run_dir, session, write_json)
+from common import (BOOKING_ENGINE_HOSTS, BOOKING_PATHS, BOOKING_SUBDOMAIN_PREFIXES, CALL_TO_RESERVE_PHRASES, Ledger,
+                    PHONE_RE, default_run_id, env, extract_emails, load_icp, read_json, root_domain, run_dir, session,
+                    write_json)
 
 MAX_BYTES = 2_500_000
 TEXT_KEEP = 7000
@@ -182,9 +183,18 @@ def parse_page(url, html, domain):
             internal.append((full.split("#")[0], anchor))
         else:
             external.append(full)
+    iframes = [urljoin(url, f.get("src")) for f in soup.find_all("iframe", src=True)]
+    forms = []
+    for form in soup.find_all("form"):
+        action = urljoin(url, form.get("action") or "")
+        names = " ".join((i.get("name") or "") + " " + (i.get("id") or "") + " " + (i.get("type") or "") + " " + (i.get("placeholder") or "")
+                         for i in form.find_all(["input", "select"])).lower()
+        has_date = ('type="date"' in str(form).lower()) or any(k in names for k in ("checkin", "check_in", "check-in", "arrival", "startdate", "start_date", "datefrom", "date_from", "arrive"))
+        forms.append({"action": action, "date_form": has_date})
     html_l = html.lower()
     text = visible_text(soup)
     return {
+        "iframes": iframes, "forms": forms,
         "url": url, "title": title, "description": desc, "site_name": site_name, "jsonld": jl,
         "internal_links": internal, "external_links": external,
         "emails": extract_emails(text, html, " ".join(mailto), " ".join(jl["emails"])),
@@ -348,12 +358,52 @@ def signal_hits(pages, phrases, window=70):
 
 
 def detect_tech(pages, icp):
+    """Software fingerprints and OTA link counts. Tech presence says nothing about whether a guest can book."""
     html = " ".join(pg["html_l"] for pg in pages)
     tech = [name for name, sigs in icp["signals"].get("tech", {}).items() if any(s in html for s in sigs)]
     ota = sum(html.count(s) for s in icp["signals"].get("ota_links", []))
-    direct_cues = [ph for ph in icp["signals"].get("direct_booking", []) if ph in html]
-    widget = any(x in html for x in ("availability", "booking-widget", "book-now", "reservation", "checkin", "check-in", "arrival"))
-    return tech, ota, bool(tech) or (len(direct_cues) >= 2 and widget)
+    return tech, ota
+
+
+def booking_path(pages, domain, icp, js_shell):
+    """Evidence that a guest can actually book on this site.
+
+    strong: a link, iframe or form target on a known reservation-engine host, a booking subdomain of the
+            company's own domain, or a form with a check-in / arrival date field.
+    weak:   an internal link to a /book, /reservations or /availability style page (could be a phone number).
+    Returns {"status": confirmed | none_found | unknown, "evidence": [...], "weak": [...], "call_to_reserve": [...]}.
+    'none_found' is only declared when enough of the site was read and nothing at all pointed at a booking
+    path, or the site tells guests to call. Everything else is unknown and goes to manual review."""
+    strong, weak, call_phrases = [], [], []
+    for pg in pages:
+        targets = list(pg.get("external_links") or []) + list(pg.get("iframes") or []) + [f["action"] for f in pg.get("forms") or []]
+        for u in targets:
+            ul = u.lower()
+            host = root_domain(u)
+            if any(h in ul for h in BOOKING_ENGINE_HOSTS):
+                strong.append(f"link/iframe to reservation engine {host} on {pg['url']}")
+            elif host.endswith("." + domain) and any(host.startswith(p) for p in BOOKING_SUBDOMAIN_PREFIXES):
+                strong.append(f"booking subdomain {host} linked from {pg['url']}")
+        for f in pg.get("forms") or []:
+            if f.get("date_form"):
+                strong.append(f"availability form with a date field on {pg['url']}")
+        for u, anchor in pg.get("internal_links") or []:
+            path = u.lower().split("?")[0].rstrip("/")
+            if any(path.endswith(p) or p + "/" in path for p in BOOKING_PATHS):
+                weak.append(f"internal page {u}")
+        tl = pg["text"].lower()
+        call_phrases += [ph for ph in CALL_TO_RESERVE_PHRASES if ph in tl]
+    strong, weak = list(dict.fromkeys(strong))[:5], list(dict.fromkeys(weak))[:5]
+    call_phrases = list(dict.fromkeys(call_phrases))[:3]
+    if strong:
+        status = "confirmed"
+    elif call_phrases and not weak:
+        status = "none_found"
+    elif not weak and not js_shell and len(pages) >= 3 and not any(ph in " ".join(pg["html_l"] for pg in pages) for ph in icp["signals"].get("direct_booking", [])):
+        status = "none_found"
+    else:
+        status = "unknown"
+    return {"status": status, "evidence": strong, "weak": weak, "call_to_reserve": call_phrases}
 
 
 # ------------------------------------------------------------------ per-company
@@ -413,7 +463,9 @@ def process(company, icp, out, max_pages, fc_fallback, ledger):
             res["index_listing_links"] = count_listing_urls([u for u, _ in index_pg["internal_links"]], domain, icp)
 
         pgs = [pg for _, pg in pages]
-        res["tech_detected"], res["ota_link_count"], res["direct_booking"] = detect_tech(pgs, icp)
+        res["tech_detected"], res["ota_link_count"] = detect_tech(pgs, icp)
+        res["booking"] = booking_path(pgs, domain, icp, js_shell)
+        res["direct_booking"] = res["booking"]["status"]
         res["exclude_text_hits"] = [h["phrase"] for h in signal_hits(pgs, icp["exclude"].get("text_signals", []))]
         res["hiring_signals"] = signal_hits(pgs, icp["signals"].get("hiring", []))
         res["growth_signals"] = signal_hits(pgs, icp["signals"].get("growth", []))
@@ -477,7 +529,7 @@ def main(argv=None):
             stats["js_shell"] += 1 if r.get("js_shell") else 0
             print(f"[{i}/{len(todo)}] {dom}: pages={len(r.get('pages', []))} people={len(r.get('people', []))} "
                   f"emails={len(r.get('emails', []))} listing_urls={r.get('listing_url_count', '-')} "
-                  f"size_claims={[c['n'] for c in r.get('size_claims', [])]} tech={r.get('tech_detected')} "
+                  f"size_claims={[c['n'] for c in r.get('size_claims', [])]} tech={r.get('tech_detected')} booking={r.get('direct_booking')} "
                   f"{'JS-SHELL ' if r.get('js_shell') else ''}errors={len(r.get('errors', []))}", flush=True)
     print(f"\nDone. {stats}. Site data in {out / 'site_data'}")
     if stats["js_shell"] and not args.firecrawl_fallback:

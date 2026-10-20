@@ -25,8 +25,11 @@ FC = "https://api.firecrawl.dev/v2"
 
 
 # ------------------------------------------------------------------ Google Places
-def places_text_search(query, ledger, max_results=60, region_code="US"):
-    """Yield place dicts for a free-text query. Up to 3 pages of 20 (Google's cap)."""
+def places_text_search(query, ledger, max_results=60, region_code="US", budget=None):
+    """Yield place dicts for a free-text query. Up to 3 pages of 20 (Google's cap).
+
+    Everything yielded is Google Places content: use it in memory to decide what to visit, then
+    throw it away. Only the place_id may be stored (Places API Policies, caching exemption)."""
     key = env("GOOGLE_PLACES_API_KEY")
     if not key:
         raise RuntimeError("GOOGLE_PLACES_API_KEY not set")
@@ -36,6 +39,8 @@ def places_text_search(query, ledger, max_results=60, region_code="US"):
         body = {"textQuery": query, "pageSize": 20, "regionCode": region_code, "languageCode": "en"}
         if token:
             body["pageToken"] = token
+        if budget is not None:
+            budget.take()
         r = http_retry(lambda: requests.post(PLACES_URL, headers=headers, json=body, timeout=30))
         ledger.add("places_request")
         if r.status_code >= 300:
@@ -83,8 +88,10 @@ def _fc_headers():
     return {"Authorization": f"Bearer {key}", "Content-Type": "application/json"}
 
 
-def fc_search(query, ledger, limit=10, location=None, tbs=None):
+def fc_search(query, ledger, limit=10, location=None, tbs=None, budget=None):
     """Web search. Returns list of {url, title, description}. Costs 2 credits per 10 results."""
+    if budget is not None:
+        budget.take()
     body = {"query": query, "limit": limit, "sources": ["web"], "country": "US"}
     if location:
         body["location"] = location
